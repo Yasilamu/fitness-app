@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FitPlan 後台食物庫</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-step="dashboard">
+    <main class="app-shell">
+      <section class="workspace flow-view is-active">
+        <header class="topbar">
+          <div>
+            <p class="today">後台管理</p>
+            <h2>後台食物庫</h2>
+          </div>
+          <a class="secondary-button" href="index.html">返回前台</a>
+        </header>
+
+        <section class="panel backend-page-panel">
+          <div class="section-heading">
+            <h2>內建食物資料</h2>
+            <span id="backendCount">0 項</span>
+          </div>
+          <form id="backendFoodForm" class="custom-form">
+            <input id="backendFoodId" type="hidden" />
+            <label>
+              名稱
+              <input id="backendFoodName" type="text" placeholder="例如：白飯 熟" />
+            </label>
+            <label>
+              kcal/100g
+              <input id="backendFoodCalories" type="number" min="0" value="150" />
+            </label>
+            <label>
+              蛋白質 g
+              <input id="backendFoodProtein" type="number" min="0" step="0.1" value="10" />
+            </label>
+            <label>
+              碳水 g
+              <input id="backendFoodCarbs" type="number" min="0" step="0.1" value="20" />
+            </label>
+            <label>
+              脂肪 g
+              <input id="backendFoodFat" type="number" min="0" step="0.1" value="3" />
+            </label>
+            <button class="secondary-button" type="submit">儲存</button>
+            <button class="text-button" id="cancelBackendFoodEditBtn" type="button">取消編輯</button>
+            <button class="text-button" id="resetBackendDefaultsBtn" type="button">還原內建預設</button>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="section-heading">
+            <h2>食物清單</h2>
+          </div>
+          <div class="food-database" id="backendFoodDatabase"></div>
+        </section>
+      </section>
+    </main>
+
+    <script src="backend.js"></script>
+  </body>
+</html>
