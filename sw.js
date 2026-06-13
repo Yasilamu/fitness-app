@@ -1,13 +1,19 @@
-const CACHE_NAME = "fitplan-pwa-v3";
+const CACHE_NAME = "fitplan-pwa-v4";
 const APP_SHELL = [
   "./",
   "./index.html",
+  "./index.html?v=20260613-mobile-2",
   "./pwa.html",
+  "./pwa.css?v=20260613-mobile-2",
   "./pwa.css",
+  "./pwa.js?v=20260613-mobile-2",
   "./pwa.js",
   "./styles.css",
+  "./styles.css?v=20260613-mobile-2",
   "./responsive.css",
+  "./responsive.css?v=20260613-mobile-2",
   "./app.js",
+  "./app.js?v=20260613-mobile-2",
   "./manifest.webmanifest",
   "./assets/icons/icon-192.png",
   "./assets/icons/icon-512.png"
@@ -33,16 +39,17 @@ self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-
-      return fetch(event.request)
-        .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-          return response;
+    fetch(event.request)
+      .then((response) => {
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        return response;
+      })
+      .catch(() =>
+        caches.match(event.request).then((cached) => {
+          if (cached) return cached;
+          return caches.match("./pwa.html");
         })
-        .catch(() => caches.match("./pwa.html"));
-    })
+      )
   );
 });
