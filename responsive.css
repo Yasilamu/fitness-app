@@ -1,0 +1,235 @@
+:root {
+  --page-pad: 22px;
+  --panel-pad: 18px;
+  --content-max: 1280px;
+  --ring-size: 250px;
+}
+
+.app-shell {
+  width: min(100%, var(--content-max));
+  margin: 0 auto;
+  padding: var(--page-pad);
+}
+
+body[data-step="profile"] .app-shell,
+body[data-step="mode"] .app-shell {
+  grid-template-columns: minmax(0, min(520px, 100%));
+}
+
+.panel {
+  padding: var(--panel-pad);
+}
+
+.dashboard-grid,
+.bottom-grid {
+  grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+}
+
+.rings {
+  grid-template-columns: minmax(180px, var(--ring-size)) 1fr;
+}
+
+.calorie-ring {
+  width: min(100%, var(--ring-size));
+}
+
+@media (max-width: 1100px) {
+  :root {
+    --content-max: 900px;
+    --ring-size: 220px;
+  }
+
+  .app-shell,
+  .dashboard-grid,
+  .bottom-grid,
+  .rings {
+    grid-template-columns: 1fr;
+  }
+
+  .rings {
+    justify-items: stretch;
+  }
+
+  .calorie-ring {
+    justify-self: center;
+  }
+
+  .macro-list {
+    width: 100%;
+  }
+}
+
+@media (max-width: 680px) {
+  :root {
+    --page-pad: 12px;
+    --panel-pad: 14px;
+    --ring-size: 188px;
+  }
+
+  body {
+    background: linear-gradient(180deg, #f6f7f2 0%, #eef4e8 100%);
+  }
+
+  .app-shell {
+    gap: 12px;
+  }
+
+  .topbar,
+  .section-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .metrics,
+  .form-grid,
+  .custom-form,
+  .log-form,
+  .ratio-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .brand {
+    gap: 10px;
+  }
+
+  .brand-mark {
+    width: 42px;
+    height: 42px;
+  }
+
+  .brand h1 {
+    font-size: 1.25rem;
+  }
+
+  .flow-steps {
+    grid-template-columns: repeat(3, 34px);
+    gap: 8px;
+  }
+
+  .step-dot {
+    width: 34px;
+    height: 34px;
+  }
+
+  .panel,
+  .metrics article {
+    box-shadow: 0 12px 30px rgba(37, 50, 34, 0.08);
+  }
+
+  h2 {
+    font-size: 1rem;
+  }
+
+  .topbar {
+    min-height: auto;
+    gap: 10px;
+  }
+
+  .date-picker {
+    min-width: 0;
+    max-width: none;
+  }
+
+  .settings-menu,
+  .settings-menu .menu-button {
+    width: 100%;
+  }
+
+  .menu-panel {
+    left: 0;
+    right: auto;
+    width: 100%;
+  }
+
+  .metrics,
+  .dashboard-grid,
+  .bottom-grid,
+  .workspace,
+  .macro-list {
+    gap: 12px;
+  }
+
+  .metrics article {
+    padding: 14px;
+  }
+
+  .metrics strong {
+    font-size: 1.65rem;
+  }
+
+  .rings {
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .calorie-ring {
+    width: min(var(--ring-size), 62vw);
+  }
+
+  .calorie-ring strong {
+    font-size: 2rem;
+  }
+
+  .section-heading,
+  .food-item,
+  .plan-actions,
+  .flow-actions {
+    gap: 10px;
+  }
+
+  .flow-actions,
+  .plan-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .flow-actions button,
+  .plan-actions button,
+  .primary-button,
+  .secondary-button {
+    width: 100%;
+  }
+
+  .mode-control,
+  .energy-summary,
+  .diet-mode-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .diet-mode {
+    min-height: auto;
+  }
+
+  .food-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .food-item button {
+    align-self: stretch;
+    width: 100%;
+  }
+}
+
+@media (max-width: 380px) {
+  :root {
+    --page-pad: 10px;
+    --panel-pad: 12px;
+    --ring-size: 168px;
+  }
+
+  .mode-copy,
+  .subsection-heading p,
+  .diet-mode span,
+  .food-item span,
+  label {
+    font-size: 0.78rem;
+  }
+
+  input,
+  select,
+  .primary-button,
+  .secondary-button {
+    min-height: 40px;
+  }
+}
