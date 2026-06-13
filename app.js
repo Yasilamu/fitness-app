@@ -300,6 +300,7 @@ function allFoods() {
 }
 
 function renderFoods() {
+  const selectedFoodId = $("foodSelect").value;
   const backendOptions = state.backendFoods
     .map(
       (food) =>
@@ -315,6 +316,9 @@ function renderFoods() {
   $("foodSelect").innerHTML = allFoods().length
     ? `${backendOptions ? `<optgroup label="內建食物庫">${backendOptions}</optgroup>` : ""}${userOptions ? `<optgroup label="我的食物資料庫">${userOptions}</optgroup>` : ""}`
     : `<option value="">請先新增後台或個人食物</option>`;
+  if (selectedFoodId && allFoods().some((food) => food.id === selectedFoodId)) {
+    $("foodSelect").value = selectedFoodId;
+  }
   $("foodSelect").disabled = allFoods().length === 0;
   $("addLogBtn").disabled = allFoods().length === 0;
 }
