@@ -16,6 +16,21 @@
 
 直接開啟 `index.html` 即可使用。
 
+## PWA 手機使用
+
+GitHub 版本已加入 PWA 入口：`pwa.html`、`manifest.webmanifest`、`sw.js`、安裝提示與 App 圖示。
+
+如果 GitHub Pages 已開啟，手機可直接開啟：
+
+```text
+https://yasilamu.github.io/fitness-app/pwa.html
+```
+
+1. Android Chrome：依瀏覽器提示按「安裝」，或從選單選「安裝應用程式」。
+2. iPhone Safari：按分享按鈕，選「加入主畫面」。
+
+> 注意：PWA 正式安裝需要 HTTPS；GitHub Pages 符合這個條件。
+
 ## 營養資料說明
 
 內建食物數值以 USDA FoodData Central 常見食物資料及其公開彙整值為基礎，實際品牌、烹調方式與含水量會造成差異，正式產品建議串接 FoodData Central API 或台灣食品營養成分資料庫。
