@@ -93,8 +93,9 @@ body {
 
 @media (max-width: 560px) {
   .pwa-install {
+    top: max(10px, env(safe-area-inset-top));
     right: max(10px, env(safe-area-inset-right));
-    bottom: max(10px, env(safe-area-inset-bottom));
+    bottom: auto;
     grid-template-columns: minmax(0, 1fr) auto;
     width: calc(100vw - 20px);
   }
