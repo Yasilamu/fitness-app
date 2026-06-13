@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#2f7d4f" />
+    <meta name="description" content="FitPlan 自主健身飲食計劃，支援 TDEE 減脂、飲食模式與每日紀錄。" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="FitPlan" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <title>FitPlan 手機版</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="assets/icons/icon.svg" />
+    <link rel="stylesheet" href="pwa.css" />
+  </head>
+  <body>
+    <iframe class="app-frame" src="index.html" title="FitPlan"></iframe>
+    <section class="pwa-install" aria-label="安裝 FitPlan">
+      <div>
+        <strong>把 FitPlan 加到手機</strong>
+        <span data-pwa-help>Android 可直接安裝；iPhone 請用分享選單加入主畫面。</span>
+      </div>
+      <button class="install-button" type="button" data-pwa-install hidden>安裝</button>
+      <button class="close-button" type="button" data-pwa-close aria-label="關閉安裝提示">×</button>
+    </section>
+    <script src="pwa.js"></script>
+  </body>
+</html>
