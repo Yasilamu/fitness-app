@@ -1,4 +1,4 @@
-const CACHE_NAME = "fitplan-pwa-v2";
+const CACHE_NAME = "fitplan-pwa-v3";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -9,7 +9,8 @@ const APP_SHELL = [
   "./responsive.css",
   "./app.js",
   "./manifest.webmanifest",
-  "./assets/icons/icon.svg"
+  "./assets/icons/icon-192.png",
+  "./assets/icons/icon-512.png"
 ];
 
 self.addEventListener("install", (event) => {
