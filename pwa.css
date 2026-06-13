@@ -1,0 +1,106 @@
+:root {
+  color-scheme: light;
+  --accent: #2f7d4f;
+  --ink: #172018;
+  --muted: #667062;
+  --surface: #ffffff;
+  --line: #dce4d7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #f6f7f2;
+  color: var(--ink);
+  font-family: Inter, "Noto Sans TC", "Microsoft JhengHei", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.app-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #f6f7f2;
+}
+
+.pwa-install {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 50;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  width: min(440px, calc(100vw - 32px));
+  padding: 14px;
+  border: 1px solid rgba(47, 125, 79, 0.26);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 18px 48px rgba(23, 32, 24, 0.16);
+  backdrop-filter: blur(14px);
+}
+
+.pwa-install strong,
+.pwa-install span {
+  display: block;
+}
+
+.pwa-install strong {
+  font-size: 0.95rem;
+  font-weight: 900;
+}
+
+.pwa-install span {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.install-button,
+.close-button {
+  border: 0;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.install-button {
+  min-height: 40px;
+  padding: 0 16px;
+  background: var(--accent);
+  color: #fff;
+}
+
+.close-button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  background: #eef4e8;
+  color: var(--accent);
+  font-size: 1.25rem;
+}
+
+@media (max-width: 560px) {
+  .pwa-install {
+    right: max(10px, env(safe-area-inset-right));
+    bottom: max(10px, env(safe-area-inset-bottom));
+    grid-template-columns: minmax(0, 1fr) auto;
+    width: calc(100vw - 20px);
+  }
+
+  .pwa-install .install-button {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+}
