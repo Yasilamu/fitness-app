@@ -1,0 +1,22 @@
+{
+  "name": "FitPlan 自主健身飲食計劃",
+  "short_name": "FitPlan",
+  "description": "以 TDEE 減少 300 至 500 kcal 為核心的減脂飲食紀錄工具。",
+  "id": "./pwa.html",
+  "start_url": "./pwa.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6f7f2",
+  "theme_color": "#2f7d4f",
+  "categories": ["health", "fitness", "food"],
+  "lang": "zh-Hant",
+  "icons": [
+    {
+      "src": "assets/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
