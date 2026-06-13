@@ -21,18 +21,21 @@ const isStandalone = window.matchMedia("(display-mode: standalone)").matches || 
 let deferredPrompt;
 let installPanel;
 
-const createInstallPanel = ({ showButton = false, text = "Android 可直接安裝；iPhone 請用分享選單加入主畫面。" } = {}) => {
+const createInstallPanel = ({
+  showButton = false,
+  text = "\u0041\u006e\u0064\u0072\u006f\u0069\u0064 \u53ef\u76f4\u63a5\u5b89\u88dd\uff1b\u0069\u0050\u0068\u006f\u006e\u0065 \u8acb\u7528\u5206\u4eab\u9078\u55ae\u52a0\u5165\u4e3b\u756b\u9762\u3002"
+} = {}) => {
   if (installPanel) return installPanel;
   installPanel = document.createElement("section");
   installPanel.className = "pwa-install";
-  installPanel.setAttribute("aria-label", "安裝 FitPlan");
+  installPanel.setAttribute("aria-label", "\u5b89\u88dd FitPlan");
   installPanel.innerHTML = `
     <div>
-      <strong>把 FitPlan 加到手機</strong>
+      <strong>\u628a FitPlan \u52a0\u5230\u624b\u6a5f</strong>
       <span data-pwa-help>${text}</span>
     </div>
-    <button class="install-button" type="button" data-pwa-install ${showButton ? "" : "hidden"}>安裝</button>
-    <button class="close-button" type="button" data-pwa-close aria-label="關閉安裝提示">×</button>
+    <button class="install-button" type="button" data-pwa-install ${showButton ? "" : "hidden"}>\u5b89\u88dd</button>
+    <button class="close-button" type="button" data-pwa-close aria-label="\u95dc\u9589\u5b89\u88dd\u63d0\u793a">\u00d7</button>
   `;
   document.body.append(installPanel);
 
@@ -62,8 +65,8 @@ window.addEventListener("beforeinstallprompt", (event) => {
   deferredPrompt = event;
   const panel = createInstallPanel({
     showButton: true,
-    text: "可安裝成手機 App，之後也能離線開啟基本功能。"
+    text: "\u53ef\u5b89\u88dd\u6210\u624b\u6a5f App\uff0c\u4e4b\u5f8c\u4e5f\u80fd\u96e2\u7dda\u958b\u555f\u57fa\u672c\u529f\u80fd\u3002"
   });
   panel.querySelector("[data-pwa-install]").hidden = false;
-  panel.querySelector("[data-pwa-help]").textContent = "可安裝成手機 App，之後也能離線開啟基本功能。";
+  panel.querySelector("[data-pwa-help]").textContent = "\u53ef\u5b89\u88dd\u6210\u624b\u6a5f App\uff0c\u4e4b\u5f8c\u4e5f\u80fd\u96e2\u7dda\u958b\u555f\u57fa\u672c\u529f\u80fd\u3002";
 });
