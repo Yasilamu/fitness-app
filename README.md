@@ -14,24 +14,30 @@
 
 ## 使用方式
 
-直接開啟 `index.html` 即可使用。
+手機直接開啟：
+
+https://yasilamu.github.io/fitness-app/
+
+電腦本機也可以直接開啟 `index.html` 使用。
 
 ## PWA 手機使用
 
 本專案已加入 PWA 必要檔案：`manifest.webmanifest`、`sw.js`、192/512 圖示與手機安裝提示。
 
-本機預覽：
+手機正式網址：
+
+https://yasilamu.github.io/fitness-app/
+
+1. Android Chrome：開啟上方網址後，依瀏覽器提示按「安裝」，或從選單選「安裝應用程式」。
+2. iPhone Safari：開啟上方網址後，按分享按鈕，選「加入主畫面」。
+
+開發時本機預覽：
 
 ```bash
 node .tools/static-server.js 8088 127.0.0.1
 ```
 
 開啟 `http://127.0.0.1:8088` 後，可檢查 manifest 與離線快取是否正常。
-
-手機正式使用建議部署到 HTTPS，例如 GitHub Pages。部署後用手機瀏覽器開啟網址：
-
-1. Android Chrome：依瀏覽器提示按「安裝」，或從選單選「安裝應用程式」。
-2. iPhone Safari：按分享按鈕，選「加入主畫面」。
 
 ## 營養資料說明
 
