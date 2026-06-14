@@ -74,7 +74,12 @@ const state = {
   plan: [],
   logsByDate: {},
   plansByDate: {},
-  planShuffleIndex: 0
+  planShuffleIndex: 0,
+  foodLibrarySync: {
+    status: "local",
+    message: "使用本機預設食物庫。",
+    fetchedAt: null
+  }
 };
 
 const $ = (id) => document.getElementById(id);
@@ -96,11 +101,16 @@ function readSavedState() {
   return JSON.parse(localStorage.getItem(storageKey) || "{}");
 }
 
+function hasCloudFoodLibrary() {
+  return state.foodLibrarySync.status === "online" || state.foodLibrarySync.status === "cached";
+}
+
 function hasFoodListChanged(nextFoods = []) {
   return JSON.stringify(state.backendFoods) !== JSON.stringify(nextFoods);
 }
 
 function syncBackendFoodsFromStorage() {
+  if (hasCloudFoodLibrary()) return false;
   const saved = readSavedState();
   if (!saved.backendFoods || !hasFoodListChanged(saved.backendFoods)) return false;
   state.backendFoods = saved.backendFoods;
@@ -109,6 +119,7 @@ function syncBackendFoodsFromStorage() {
 
 function loadState() {
   const saved = readSavedState();
+  const cachedCloudFoods = window.FitPlanSupabaseFoods?.readCachedFoods?.();
   const currentDate = todayKey();
   state.step = saved.step || "profile";
   state.mode = saved.mode || "calorie";
@@ -117,7 +128,14 @@ function loadState() {
   state.dietStartDate = saved.dietStartDate || new Date().toISOString();
   state.dietRatios = mergeDietRatios(saved.dietRatios);
   state.selectedDate = saved.selectedDate || currentDate;
-  state.backendFoods = saved.backendFoods || structuredClone(defaultFoods);
+  state.backendFoods = cachedCloudFoods?.foods || saved.backendFoods || structuredClone(defaultFoods);
+  if (cachedCloudFoods?.foods?.length) {
+    state.foodLibrarySync = {
+      status: "cached",
+      message: "先使用上次快取的 Supabase 食物庫。",
+      fetchedAt: cachedCloudFoods.fetchedAt || null
+    };
+  }
   state.foods = saved.foods || saved.customFoods || [];
   state.logsByDate = saved.logsByDate || {};
   state.plansByDate = saved.plansByDate || {};
@@ -138,7 +156,7 @@ function loadState() {
 }
 
 function saveState() {
-  syncBackendFoodsFromStorage();
+  if (!hasCloudFoodLibrary()) syncBackendFoodsFromStorage();
   const profile = Object.fromEntries(["height", "weight", "age", "sex", "activity", "goal"].map((id) => [id, $(id).value]));
   localStorage.setItem(
     storageKey,
@@ -160,6 +178,21 @@ function saveState() {
       profile
     })
   );
+}
+
+async function syncCloudFoodLibrary() {
+  if (!window.FitPlanSupabaseFoods) return;
+  const result = await window.FitPlanSupabaseFoods.loadFoods(structuredClone(defaultFoods));
+  state.foodLibrarySync = {
+    status: result.status,
+    message: result.message,
+    fetchedAt: result.fetchedAt || null
+  };
+  if (Array.isArray(result.foods) && result.foods.length && hasFoodListChanged(result.foods)) {
+    state.backendFoods = result.foods;
+  }
+  render();
+  saveState();
 }
 
 function round(value, decimals = 0) {
@@ -400,6 +433,10 @@ function renderFoodLibrary() {
   const orderedKeys = [...Object.keys(categoryLabels), ...Object.keys(groups).filter((key) => !categoryLabels[key])].filter((key) => groups[key]?.length);
 
   $("foodLibrarySummary").textContent = `${foods.length} 項`;
+  if ($("foodLibrarySyncStatus")) {
+    const fetchedText = state.foodLibrarySync.fetchedAt ? ` · ${new Date(state.foodLibrarySync.fetchedAt).toLocaleString("zh-TW")}` : "";
+    $("foodLibrarySyncStatus").textContent = `${state.foodLibrarySync.message}${fetchedText}`;
+  }
   $("foodLibraryList").innerHTML = foods.length
     ? orderedKeys
         .map(
@@ -1093,3 +1130,4 @@ renderFoods();
 setMode(state.mode);
 setDietMode(state.dietMode);
 goToStep(state.step);
+syncCloudFoodLibrary();

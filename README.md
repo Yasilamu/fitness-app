@@ -42,3 +42,14 @@ node .tools/static-server.js 8088 127.0.0.1
 ## 營養資料說明
 
 內建食物數值以 USDA FoodData Central 常見食物資料及其公開彙整值為基礎，實際品牌、烹調方式與含水量會造成差異，正式產品建議串接 FoodData Central API 或台灣食品營養成分資料庫。
+
+## Supabase 食物庫同步
+
+手機端與電腦端要同步食物庫時，不能依靠 `localStorage`，因為它只存在同一台裝置的同一個瀏覽器。此專案已加入 Supabase 唯讀食物庫同步：
+
+1. 在 Supabase SQL Editor 執行 `supabase-foods.sql`。
+2. 到 Supabase Project Settings 複製 Project URL 與公開 `anon` / publishable key。
+3. 將 `supabase-config.js` 裡的 `url` 和 `anonKey` 填入公開值。
+4. 部署到 GitHub Pages 後，手機端開啟 `https://yasilamu.github.io/fitness-app/`，前台與 `backend.html` 會讀取同一份 Supabase 食物庫。
+
+注意：前端只能放公開 anon/publishable key，不能放 `service_role` 或 secret key。v1 僅同步食物庫讀取；個人紀錄、身體資料、自訂食物仍保存在各裝置本機。

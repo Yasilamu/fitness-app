@@ -939,6 +939,26 @@ select:focus {
   min-height: 68px;
 }
 
+.sync-status {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.backend-note {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px dashed rgba(93, 121, 95, 0.28);
+  border-radius: 8px;
+  background: var(--surface);
+  color: #526252;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
 .food-library-view {
   max-width: 920px;
   width: 100%;

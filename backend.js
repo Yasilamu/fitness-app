@@ -21,11 +21,13 @@ const defaultBackendFoods = [
   { id: "lentils", name: "扁豆 熟", calories: 116, protein: 9, carbs: 20.1, fat: 0.4, category: "carb" }
 ];
 
-const storageKey = "fitplan-state-v1";
-const dataChannel = "fitplan-data-sync";
-const syncChannel = "BroadcastChannel" in window ? new BroadcastChannel(dataChannel) : null;
 const $ = (id) => document.getElementById(id);
-let backendFoods = [];
+let backendFoods = structuredClone(defaultBackendFoods);
+let syncState = {
+  status: "local",
+  message: "使用本機預設食物庫。",
+  fetchedAt: null
+};
 
 function escapeHtml(value) {
   return String(value)
@@ -36,42 +38,14 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-function readSavedState() {
-  return JSON.parse(localStorage.getItem(storageKey) || "{}");
-}
-
-function saveBackendFoods() {
-  const saved = readSavedState();
-  localStorage.setItem(storageKey, JSON.stringify({ ...saved, backendFoods }));
-  syncChannel?.postMessage({ type: "backend-foods-updated" });
-}
-
-function loadBackendFoods() {
-  const saved = readSavedState();
-  backendFoods = saved.backendFoods || structuredClone(defaultBackendFoods);
-}
-
-function resetForm() {
-  $("backendFoodId").value = "";
-  $("backendFoodForm").reset();
-  $("backendFoodCalories").value = 150;
-  $("backendFoodProtein").value = 10;
-  $("backendFoodCarbs").value = 20;
-  $("backendFoodFat").value = 3;
-}
-
-function fillForm(food) {
-  $("backendFoodId").value = food.id;
-  $("backendFoodName").value = food.name;
-  $("backendFoodCalories").value = food.calories;
-  $("backendFoodProtein").value = food.protein;
-  $("backendFoodCarbs").value = food.carbs;
-  $("backendFoodFat").value = food.fat;
-  window.scrollTo({ top: 0, behavior: "smooth" });
+function formatFood(food) {
+  return `${food.calories} kcal/100g · 蛋白質 ${food.protein}g / 碳水 ${food.carbs}g / 脂肪 ${food.fat}g`;
 }
 
 function render() {
   $("backendCount").textContent = `${backendFoods.length} 項`;
+  const fetchedText = syncState.fetchedAt ? ` · ${new Date(syncState.fetchedAt).toLocaleString("zh-TW")}` : "";
+  $("backendSyncStatus").textContent = `${syncState.message}${fetchedText}`;
   $("backendFoodDatabase").innerHTML = backendFoods.length
     ? backendFoods
         .map(
@@ -79,68 +53,28 @@ function render() {
         <div class="food-item database-item">
           <div>
             <strong>${escapeHtml(food.name)}</strong>
-            <span>${food.calories} kcal/100g · 蛋白質 ${food.protein}g / 碳水 ${food.carbs}g / 脂肪 ${food.fat}g</span>
-          </div>
-          <div class="database-actions">
-            <button type="button" data-edit-food="${food.id}">編輯</button>
-            <button type="button" data-delete-food="${food.id}">刪除</button>
+            <span>${formatFood(food)}</span>
           </div>
         </div>`
         )
         .join("")
-    : `<div class="empty compact-empty">後台食物庫目前是空的。</div>`;
+    : `<div class="empty compact-empty">食物庫目前沒有資料。</div>`;
 }
 
-function bindEvents() {
-  $("backendFoodForm").addEventListener("submit", (event) => {
-    event.preventDefault();
-    const name = $("backendFoodName").value.trim();
-    if (!name) return;
-    const food = {
-      id: $("backendFoodId").value || `backend-${Date.now()}`,
-      name,
-      calories: Number($("backendFoodCalories").value) || 0,
-      protein: Number($("backendFoodProtein").value) || 0,
-      carbs: Number($("backendFoodCarbs").value) || 0,
-      fat: Number($("backendFoodFat").value) || 0,
-      category: "backend"
-    };
-    const index = backendFoods.findIndex((item) => item.id === food.id);
-    if (index >= 0) {
-      backendFoods[index] = food;
-    } else {
-      backendFoods.push(food);
-    }
-    saveBackendFoods();
-    resetForm();
+async function loadBackendFoods() {
+  if (!window.FitPlanSupabaseFoods) {
     render();
-  });
-
-  $("cancelBackendFoodEditBtn").addEventListener("click", resetForm);
-
-  $("resetBackendDefaultsBtn").addEventListener("click", () => {
-    backendFoods = structuredClone(defaultBackendFoods);
-    saveBackendFoods();
-    resetForm();
-    render();
-  });
-
-  $("backendFoodDatabase").addEventListener("click", (event) => {
-    const editId = event.target.dataset.editFood;
-    const deleteId = event.target.dataset.deleteFood;
-    if (editId) {
-      const food = backendFoods.find((item) => item.id === editId);
-      if (food) fillForm(food);
-    }
-    if (deleteId) {
-      backendFoods = backendFoods.filter((item) => item.id !== deleteId);
-      saveBackendFoods();
-      resetForm();
-      render();
-    }
-  });
+    return;
+  }
+  const result = await window.FitPlanSupabaseFoods.loadFoods(structuredClone(defaultBackendFoods));
+  syncState = {
+    status: result.status,
+    message: result.message,
+    fetchedAt: result.fetchedAt || null
+  };
+  backendFoods = Array.isArray(result.foods) && result.foods.length ? result.foods : structuredClone(defaultBackendFoods);
+  render();
 }
 
-loadBackendFoods();
-bindEvents();
 render();
+loadBackendFoods();

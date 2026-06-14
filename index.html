@@ -12,7 +12,7 @@
     <title>FitPlan 自主健身飲食計劃</title>
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
-    <link rel="stylesheet" href="styles.css?v=20260613-mobile-2" />
+    <link rel="stylesheet" href="styles.css?v=20260614-supabase" />
   </head>
   <body>
     <main class="app-shell">
@@ -396,11 +396,14 @@
             <h2>全部食物</h2>
             <span id="foodLibrarySummary">0 項</span>
           </div>
+          <p class="sync-status" id="foodLibrarySyncStatus">使用本機預設食物庫。</p>
           <div class="food-library-list" id="foodLibraryList"></div>
         </article>
       </section>
     </main>
 
-    <script src="app.js?v=20260613-mobile-2"></script>
+    <script src="supabase-config.js?v=20260614-supabase"></script>
+    <script src="supabase-foods.js?v=20260614-supabase"></script>
+    <script src="app.js?v=20260614-supabase"></script>
   </body>
 </html>
