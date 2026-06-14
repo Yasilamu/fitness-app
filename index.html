@@ -327,6 +327,10 @@
                 </div>
                 <button class="text-button" id="closeFoodPickerBtn" type="button">關閉</button>
               </div>
+              <label class="food-search-field" for="foodSearch">
+                <span>搜尋食物</span>
+                <input id="foodSearch" type="search" placeholder="輸入食物名稱或分類" autocomplete="off" />
+              </label>
               <div class="food-picker-list" id="foodPickerList"></div>
             </div>
             <form id="customForm" class="custom-form" hidden>
@@ -402,8 +406,9 @@
       </section>
     </main>
 
-    <script src="supabase-config.js?v=20260614-supabase"></script>
-    <script src="supabase-foods.js?v=20260614-supabase"></script>
-    <script src="app.js?v=20260614-supabase"></script>
+    <script src="food-basis.js?v=20260614-serving-basis"></script>
+    <script src="supabase-config.js?v=20260614-serving-basis"></script>
+    <script src="supabase-foods.js?v=20260614-serving-basis"></script>
+    <script src="app.js?v=20260614-serving-basis"></script>
   </body>
 </html>
