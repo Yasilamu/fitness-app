@@ -825,6 +825,24 @@ select:focus {
   font-weight: 800;
 }
 
+.food-search-field {
+  display: grid;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.food-search-field span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.food-search-field input {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 8px;
+}
+
 .food-picker-list {
   display: grid;
   gap: 10px;
