@@ -41,6 +41,15 @@ const dietModeLabel = {
   keto: "生酮飲食"
 };
 
+const categoryLabels = {
+  protein: "蛋白質",
+  carb: "碳水",
+  veg: "蔬菜",
+  fat: "脂肪",
+  drink: "飲品",
+  user: "自訂"
+};
+
 const defaultDietRatios = {
   general: { protein: 1.8, carbs: 3, fat: 0.8, deficit: 400 },
   carbDrop: { protein: 1.8, carbs: 3, fat: 0.8, weeklyDrop: 30 },
@@ -70,6 +79,8 @@ const state = {
 
 const $ = (id) => document.getElementById(id);
 const storageKey = "fitplan-state-v1";
+const dataChannel = "fitplan-data-sync";
+const syncChannel = "BroadcastChannel" in window ? new BroadcastChannel(dataChannel) : null;
 
 function todayKey() {
   return new Date().toISOString().slice(0, 10);
@@ -81,8 +92,23 @@ function daysBetween(startDate, endDate) {
   return Math.max(0, Math.floor((end - start) / (24 * 60 * 60 * 1000)));
 }
 
+function readSavedState() {
+  return JSON.parse(localStorage.getItem(storageKey) || "{}");
+}
+
+function hasFoodListChanged(nextFoods = []) {
+  return JSON.stringify(state.backendFoods) !== JSON.stringify(nextFoods);
+}
+
+function syncBackendFoodsFromStorage() {
+  const saved = readSavedState();
+  if (!saved.backendFoods || !hasFoodListChanged(saved.backendFoods)) return false;
+  state.backendFoods = saved.backendFoods;
+  return true;
+}
+
 function loadState() {
-  const saved = JSON.parse(localStorage.getItem(storageKey) || "{}");
+  const saved = readSavedState();
   const currentDate = todayKey();
   state.step = saved.step || "profile";
   state.mode = saved.mode || "calorie";
@@ -112,6 +138,7 @@ function loadState() {
 }
 
 function saveState() {
+  syncBackendFoodsFromStorage();
   const profile = Object.fromEntries(["height", "weight", "age", "sex", "activity", "goal"].map((id) => [id, $(id).value]));
   localStorage.setItem(
     storageKey,
@@ -299,6 +326,19 @@ function allFoods() {
   return [...state.backendFoods, ...state.foods];
 }
 
+function foodCategoryLabel(food) {
+  return categoryLabels[food.category] || "其他";
+}
+
+function formatFoodPer100(food) {
+  return `蛋白質: ${food.protein}g | 碳水: ${food.carbs}g | 脂肪: ${food.fat}g | 熱量: ${food.calories}kcal (100g)`;
+}
+
+function selectedFood() {
+  const foods = allFoods();
+  return foods.find((food) => food.id === $("foodSelect").value) || foods[0];
+}
+
 function renderFoods() {
   const selectedFoodId = $("foodSelect").value;
   const backendOptions = state.backendFoods
@@ -321,6 +361,80 @@ function renderFoods() {
   }
   $("foodSelect").disabled = allFoods().length === 0;
   $("addLogBtn").disabled = allFoods().length === 0;
+  $("foodPickerBtn").disabled = allFoods().length === 0;
+
+  const food = selectedFood();
+  $("selectedFoodName").textContent = food ? food.name : "沒有可選食物";
+  $("selectedFoodMacros").textContent = food ? formatFoodPer100(food) : "請先新增後台或個人食物";
+}
+
+function renderFoodPicker() {
+  const foods = allFoods();
+  const selectedId = selectedFood()?.id;
+  $("foodPickerCount").textContent = `${foods.length} 項`;
+  $("foodPickerList").innerHTML = foods.length
+    ? foods
+        .map(
+          (food) => `
+        <button class="food-option-card${food.id === selectedId ? " is-active" : ""}" type="button" data-select-food="${food.id}">
+          <span class="food-option-accent" aria-hidden="true"></span>
+          <span>
+            <strong>${escapeHtml(food.name)}</strong>
+            <small>${foodCategoryLabel(food)}</small>
+            <em>${formatFoodPer100(food)}</em>
+          </span>
+        </button>`
+        )
+        .join("")
+    : `<div class="empty compact-empty">食物庫目前沒有資料。先新增食物後就能選取。</div>`;
+}
+
+function renderFoodLibrary() {
+  const foods = allFoods();
+  const groups = foods.reduce((result, food) => {
+    const key = food.category || "other";
+    result[key] ||= [];
+    result[key].push(food);
+    return result;
+  }, {});
+  const orderedKeys = [...Object.keys(categoryLabels), ...Object.keys(groups).filter((key) => !categoryLabels[key])].filter((key) => groups[key]?.length);
+
+  $("foodLibrarySummary").textContent = `${foods.length} 項`;
+  $("foodLibraryList").innerHTML = foods.length
+    ? orderedKeys
+        .map(
+          (key) => `
+        <section class="library-group">
+          <div class="library-group-title">
+            <strong>${categoryLabels[key] || "其他"}</strong>
+            <span>${groups[key].length} 項</span>
+          </div>
+          <div class="library-card-list">
+            ${groups[key]
+              .map(
+                (food) => `
+              <article class="library-food-card">
+                <strong>${escapeHtml(food.name)}</strong>
+                <span>${formatFoodPer100(food)}</span>
+              </article>`
+              )
+              .join("")}
+          </div>
+        </section>`
+        )
+        .join("")
+    : `<div class="empty">食物庫目前沒有資料。新增自訂食物後會顯示在這裡。</div>`;
+}
+
+function openFoodPicker() {
+  $("foodPickerPanel").hidden = false;
+  $("foodPickerBtn").setAttribute("aria-expanded", "true");
+  renderFoodPicker();
+}
+
+function closeFoodPicker() {
+  $("foodPickerPanel").hidden = true;
+  $("foodPickerBtn").setAttribute("aria-expanded", "false");
 }
 
 function renderFoodDatabase() {
@@ -350,7 +464,8 @@ function goToStep(step) {
   const viewByStep = {
     profile: "profileView",
     mode: "modeView",
-    dashboard: "dashboardView"
+    dashboard: "dashboardView",
+    foodLibrary: "foodLibraryView"
   };
 
   document.querySelectorAll(".flow-view").forEach((view) => {
@@ -361,7 +476,7 @@ function goToStep(step) {
     dot.classList.toggle("is-active", dot.dataset.stepDot === step);
   });
 
-  if (step === "dashboard") {
+  if (step === "dashboard" || step === "foodLibrary") {
     render();
   } else {
     saveState();
@@ -546,6 +661,8 @@ function render() {
   renderLog();
   renderPlan();
   renderFoods();
+  renderFoodPicker();
+  renderFoodLibrary();
   renderFoodDatabase();
   saveState();
 }
@@ -725,10 +842,42 @@ function bindEvents() {
     $("settingsMenuBtn").setAttribute("aria-expanded", "false");
     goToStep("profile");
   });
+  $("foodLibraryMenuBtn").addEventListener("click", () => {
+    $("settingsMenu").hidden = true;
+    $("settingsMenuBtn").setAttribute("aria-expanded", "false");
+    goToStep("foodLibrary");
+  });
+  $("backToDashboardBtn").addEventListener("click", () => goToStep("dashboard"));
   document.addEventListener("click", (event) => {
     if (!$("settingsMenu").hidden && !event.target.closest(".settings-menu")) {
       $("settingsMenu").hidden = true;
       $("settingsMenuBtn").setAttribute("aria-expanded", "false");
+    }
+  });
+
+  $("foodPickerBtn").addEventListener("click", () => {
+    if ($("foodPickerPanel").hidden) {
+      openFoodPicker();
+    } else {
+      closeFoodPicker();
+    }
+  });
+  $("closeFoodPickerBtn").addEventListener("click", closeFoodPicker);
+  $("foodPickerList").addEventListener("click", (event) => {
+    const option = event.target.closest("[data-select-food]");
+    if (!option) return;
+    $("foodSelect").value = option.dataset.selectFood;
+    renderFoods();
+    renderFoodPicker();
+    closeFoodPicker();
+  });
+  $("foodSelect").addEventListener("change", () => {
+    renderFoods();
+    renderFoodPicker();
+  });
+  document.addEventListener("click", (event) => {
+    if (!$("foodPickerPanel").hidden && !event.target.closest(".logger-panel")) {
+      closeFoodPicker();
     }
   });
 
@@ -805,10 +954,141 @@ function bindEvents() {
     state.plansByDate[state.selectedDate] = [];
     render();
   });
+
+  window.addEventListener("storage", (event) => {
+    if (event.key !== storageKey || !syncBackendFoodsFromStorage()) return;
+    render();
+  });
+
+  syncChannel?.addEventListener("message", (event) => {
+    if (event.data?.type !== "backend-foods-updated" || !syncBackendFoodsFromStorage()) return;
+    render();
+  });
+}
+
+function setupPwa() {
+  if ("serviceWorker" in navigator && location.protocol !== "file:") {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch((error) => {
+        console.warn("Service worker registration failed", error);
+      });
+    });
+  }
+
+  const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
+  if (isStandalone) return;
+
+  const installPanel = document.createElement("section");
+  installPanel.className = "pwa-install";
+  installPanel.setAttribute("aria-label", "安裝 FitPlan");
+  installPanel.innerHTML = `
+    <div>
+      <strong>把 FitPlan 加到手機</strong>
+      <span data-pwa-help>Android 可直接安裝；iPhone 請用分享選單加入主畫面。</span>
+    </div>
+    <button class="secondary-button" type="button" data-pwa-install hidden>安裝</button>
+    <button class="icon-button" type="button" data-pwa-close aria-label="關閉安裝提示">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M6 6l12 12M18 6 6 18" />
+      </svg>
+    </button>
+  `;
+  document.body.append(installPanel);
+
+  const installButton = installPanel.querySelector("[data-pwa-install]");
+  const helpText = installPanel.querySelector("[data-pwa-help]");
+  let deferredPrompt;
+
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    deferredPrompt = event;
+    installButton.hidden = false;
+    helpText.textContent = "可安裝成手機 App，之後也能離線開啟基本功能。";
+  });
+
+  installButton.addEventListener("click", async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = undefined;
+    installPanel.remove();
+  });
+
+  installPanel.querySelector("[data-pwa-close]").addEventListener("click", () => {
+    installPanel.remove();
+  });
+}
+
+function setupPwaPrompt() {
+  if ("serviceWorker" in navigator && location.protocol !== "file:") {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch((error) => {
+        console.warn("Service worker registration failed", error);
+      });
+    });
+  }
+
+  const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
+  if (isStandalone) return;
+
+  let deferredPrompt;
+  let installPanel;
+
+  const createInstallPanel = ({ showButton = false, text = "Android 可直接安裝；iPhone 請用分享選單加入主畫面。" } = {}) => {
+    if (installPanel) return installPanel;
+    installPanel = document.createElement("section");
+    installPanel.className = "pwa-install";
+    installPanel.setAttribute("aria-label", "安裝 FitPlan");
+    installPanel.innerHTML = `
+      <div>
+        <strong>把 FitPlan 加到手機</strong>
+        <span data-pwa-help>${text}</span>
+      </div>
+      <button class="secondary-button" type="button" data-pwa-install ${showButton ? "" : "hidden"}>安裝</button>
+      <button class="icon-button" type="button" data-pwa-close aria-label="關閉安裝提示">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 6l12 12M18 6 6 18" />
+        </svg>
+      </button>
+    `;
+    document.body.append(installPanel);
+
+    installPanel.querySelector("[data-pwa-install]").addEventListener("click", async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = undefined;
+      installPanel.remove();
+      installPanel = undefined;
+    });
+
+    installPanel.querySelector("[data-pwa-close]").addEventListener("click", () => {
+      installPanel.remove();
+      installPanel = undefined;
+    });
+
+    return installPanel;
+  };
+
+  if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+    createInstallPanel();
+  }
+
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    deferredPrompt = event;
+    const panel = createInstallPanel({
+      showButton: true,
+      text: "可安裝成手機 App，之後也能離線開啟基本功能。"
+    });
+    panel.querySelector("[data-pwa-install]").hidden = false;
+    panel.querySelector("[data-pwa-help]").textContent = "可安裝成手機 App，之後也能離線開啟基本功能。";
+  });
 }
 
 loadState();
 bindEvents();
+setupPwaPrompt();
 renderFoods();
 setMode(state.mode);
 setDietMode(state.dietMode);

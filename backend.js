@@ -22,6 +22,8 @@ const defaultBackendFoods = [
 ];
 
 const storageKey = "fitplan-state-v1";
+const dataChannel = "fitplan-data-sync";
+const syncChannel = "BroadcastChannel" in window ? new BroadcastChannel(dataChannel) : null;
 const $ = (id) => document.getElementById(id);
 let backendFoods = [];
 
@@ -41,6 +43,7 @@ function readSavedState() {
 function saveBackendFoods() {
   const saved = readSavedState();
   localStorage.setItem(storageKey, JSON.stringify({ ...saved, backendFoods }));
+  syncChannel?.postMessage({ type: "backend-foods-updated" });
 }
 
 function loadBackendFoods() {

@@ -148,11 +148,13 @@ body[data-step="mode"] .app-shell {
   justify-content: center;
 }
 
-body[data-step="dashboard"] .app-shell {
+body[data-step="dashboard"] .app-shell,
+body[data-step="foodLibrary"] .app-shell {
   grid-template-columns: 1fr;
 }
 
-body[data-step="dashboard"] .sidebar {
+body[data-step="dashboard"] .sidebar,
+body[data-step="foodLibrary"] .sidebar {
   display: none;
 }
 
@@ -723,8 +725,168 @@ select:focus {
   margin-top: 15px;
 }
 
+.logger-panel {
+  position: relative;
+}
+
 .log-form button {
   grid-column: 1 / -1;
+}
+
+.food-picker-field {
+  display: grid;
+  gap: 7px;
+}
+
+.native-food-select {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.food-picker-button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcf9;
+  color: var(--ink);
+  text-align: left;
+}
+
+.food-picker-button strong,
+.food-picker-button small {
+  display: block;
+}
+
+.food-picker-button strong {
+  font-size: 0.92rem;
+  line-height: 1.25;
+}
+
+.food-picker-button small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.food-picker-button svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.food-picker-panel {
+  position: absolute;
+  left: var(--panel-pad);
+  right: var(--panel-pad);
+  top: 112px;
+  z-index: 20;
+  max-height: min(520px, calc(100vh - 160px));
+  padding: 14px;
+  border: 1px solid rgba(47, 125, 79, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 22px 60px rgba(23, 32, 24, 0.2);
+  overflow: hidden;
+}
+
+.food-picker-head,
+.library-group-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.food-picker-head strong,
+.food-picker-head span {
+  display: block;
+}
+
+.food-picker-head span,
+.library-group-title span {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.food-picker-list {
+  display: grid;
+  gap: 10px;
+  max-height: min(430px, calc(100vh - 240px));
+  margin-top: 12px;
+  padding-right: 3px;
+  overflow-y: auto;
+}
+
+.food-option-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 4px minmax(0, 1fr);
+  gap: 14px;
+  width: 100%;
+  min-height: 82px;
+  padding: 14px 16px 14px 0;
+  border: 1px solid #edf2e9;
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--ink);
+  text-align: left;
+  box-shadow: 0 10px 22px rgba(37, 50, 34, 0.06);
+}
+
+.food-option-accent {
+  width: 4px;
+  min-height: 100%;
+  border-radius: 999px;
+  background: rgba(47, 125, 79, 0.75);
+}
+
+.food-option-card strong,
+.food-option-card small,
+.food-option-card em {
+  display: block;
+}
+
+.food-option-card strong {
+  font-size: 0.96rem;
+  line-height: 1.3;
+}
+
+.food-option-card small {
+  margin-top: 3px;
+  color: var(--accent-strong);
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.food-option-card em {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.food-option-card.is-active {
+  border-color: rgba(47, 125, 79, 0.42);
+  background: var(--surface-strong);
 }
 
 .custom-form {
@@ -775,6 +937,70 @@ select:focus {
 
 .compact-empty {
   min-height: 68px;
+}
+
+.food-library-view {
+  max-width: 920px;
+  width: 100%;
+}
+
+.food-library-view .topbar {
+  align-items: flex-start;
+}
+
+.food-library-view .topbar .secondary-button {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 104px;
+  padding-inline: 14px;
+  white-space: nowrap;
+}
+
+.food-library-list {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.library-group {
+  display: grid;
+  gap: 10px;
+}
+
+.library-group-title {
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.library-group-title strong {
+  font-size: 0.96rem;
+}
+
+.library-card-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.library-food-card {
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-left: 4px solid rgba(47, 125, 79, 0.75);
+  border-radius: 8px;
+  background: #fbfcf9;
+}
+
+.library-food-card strong,
+.library-food-card span {
+  display: block;
+}
+
+.library-food-card span {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 1.45;
 }
 
 .food-log,
@@ -970,6 +1196,19 @@ select:focus {
     gap: 12px;
   }
 
+  .food-picker-panel {
+    position: fixed;
+    top: max(74px, env(safe-area-inset-top));
+    right: 12px;
+    left: 12px;
+    max-height: calc(100vh - 96px);
+    padding: 14px;
+  }
+
+  .food-picker-list {
+    max-height: calc(100vh - 180px);
+  }
+
   .rings {
     gap: 16px;
     margin-top: 16px;
@@ -990,14 +1229,52 @@ select:focus {
     gap: 10px;
   }
 
-  .flow-actions,
-  .plan-actions {
+  .panel > .section-heading {
+    align-items: flex-start;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .panel > .section-heading h2 {
+    margin: 0;
+    flex: 0 0 auto;
+  }
+
+  .panel > .section-heading > .text-button {
+    flex: 0 0 auto;
+    align-self: flex-start;
+    width: auto;
+    padding: 2px 0;
+    white-space: nowrap;
+  }
+
+  .panel > .section-heading .plan-actions {
+    flex: 1 1 auto;
+    align-items: flex-start;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-left: auto;
+    max-width: calc(100% - 96px);
+    text-align: right;
+  }
+
+  .panel > .section-heading .plan-actions span {
+    flex: 1 0 100%;
+    text-align: right;
+  }
+
+  .panel > .section-heading .plan-actions button {
+    width: auto;
+    padding: 2px 0;
+    white-space: nowrap;
+  }
+
+  .flow-actions {
     align-items: stretch;
     flex-direction: column;
   }
 
   .flow-actions button,
-  .plan-actions button,
   .primary-button,
   .secondary-button {
     width: 100%;
@@ -1028,6 +1305,18 @@ select:focus {
     align-self: stretch;
     width: 100%;
   }
+
+  .library-card-list {
+    grid-template-columns: 1fr;
+  }
+
+  .food-library-view .topbar {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .food-library-view .topbar .secondary-button {
+    width: auto;
+  }
 }
 
 @media (max-width: 380px) {
@@ -1040,7 +1329,10 @@ select:focus {
   .mode-copy,
   .subsection-heading p,
   .diet-mode span,
+  .food-picker-button small,
+  .food-option-card em,
   .food-item span,
+  .library-food-card span,
   label {
     font-size: 0.78rem;
   }

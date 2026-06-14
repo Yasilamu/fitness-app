@@ -3,8 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#2f7d4f" />
+    <meta name="description" content="FitPlan 自主健身飲食計劃，支援 TDEE 減脂、飲食模式與每日紀錄。" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="FitPlan" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>FitPlan 自主健身飲食計劃</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
+    <link rel="stylesheet" href="styles.css?v=20260613-mobile-2" />
   </head>
   <body>
     <main class="app-shell">
@@ -223,6 +231,7 @@
             </button>
             <div class="menu-panel" id="settingsMenu" hidden>
               <button type="button" id="editProfileBtn">修改個人設定</button>
+              <button type="button" id="foodLibraryMenuBtn">食物庫</button>
             </div>
           </div>
         </header>
@@ -291,9 +300,18 @@
               <button class="text-button" id="customToggle" type="button">自訂食物</button>
             </div>
             <form id="logForm" class="log-form">
-              <label>
+              <label class="food-picker-field">
                 食物
-                <select id="foodSelect"></select>
+                <select id="foodSelect" class="native-food-select" aria-hidden="true" tabindex="-1"></select>
+                <button class="food-picker-button" id="foodPickerBtn" type="button" aria-expanded="false" aria-controls="foodPickerPanel">
+                  <span>
+                    <strong id="selectedFoodName">選擇食物</strong>
+                    <small id="selectedFoodMacros">從食物庫挑選一項食物</small>
+                  </span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="m7 10 5 5 5-5" />
+                  </svg>
+                </button>
               </label>
               <label>
                 份量 g
@@ -301,6 +319,16 @@
               </label>
               <button class="primary-button" id="addLogBtn" type="submit">加入紀錄</button>
             </form>
+            <div class="food-picker-panel" id="foodPickerPanel" hidden>
+              <div class="food-picker-head">
+                <div>
+                  <strong>選擇食物</strong>
+                  <span id="foodPickerCount">0 項</span>
+                </div>
+                <button class="text-button" id="closeFoodPickerBtn" type="button">關閉</button>
+              </div>
+              <div class="food-picker-list" id="foodPickerList"></div>
+            </div>
             <form id="customForm" class="custom-form" hidden>
               <input id="customId" type="hidden" />
               <label>
@@ -353,8 +381,26 @@
           </article>
         </section>
       </section>
+
+      <section class="workspace flow-view food-library-view" id="foodLibraryView" aria-labelledby="food-library-title">
+        <header class="topbar">
+          <div>
+            <p class="today">已儲存的食物種類與營養資料</p>
+            <h2 id="food-library-title">食物庫</h2>
+          </div>
+          <button class="secondary-button" id="backToDashboardBtn" type="button">返回紀錄</button>
+        </header>
+
+        <article class="panel">
+          <div class="section-heading">
+            <h2>全部食物</h2>
+            <span id="foodLibrarySummary">0 項</span>
+          </div>
+          <div class="food-library-list" id="foodLibraryList"></div>
+        </article>
+      </section>
     </main>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=20260613-mobile-2"></script>
   </body>
 </html>

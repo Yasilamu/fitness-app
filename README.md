@@ -18,18 +18,20 @@
 
 ## PWA 手機使用
 
-GitHub 版本已加入 PWA 入口：`pwa.html`、`manifest.webmanifest`、`sw.js`、安裝提示與 App 圖示。
+本專案已加入 PWA 必要檔案：`manifest.webmanifest`、`sw.js`、192/512 圖示與手機安裝提示。
 
-如果 GitHub Pages 已開啟，手機可直接開啟：
+本機預覽：
 
-```text
-https://yasilamu.github.io/fitness-app/pwa.html
+```bash
+node .tools/static-server.js 8088 127.0.0.1
 ```
+
+開啟 `http://127.0.0.1:8088` 後，可檢查 manifest 與離線快取是否正常。
+
+手機正式使用建議部署到 HTTPS，例如 GitHub Pages。部署後用手機瀏覽器開啟網址：
 
 1. Android Chrome：依瀏覽器提示按「安裝」，或從選單選「安裝應用程式」。
 2. iPhone Safari：按分享按鈕，選「加入主畫面」。
-
-> 注意：PWA 正式安裝需要 HTTPS；GitHub Pages 符合這個條件。
 
 ## 營養資料說明
 
