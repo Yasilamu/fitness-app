@@ -364,12 +364,30 @@ function foodCategoryLabel(food) {
 }
 
 function formatFoodPer100(food) {
-  return `蛋白質: ${food.protein}g | 碳水: ${food.carbs}g | 脂肪: ${food.fat}g | 熱量: ${food.calories}kcal (100g)`;
+  const basis = window.FitPlanFoodBasis?.servingLabel(food);
+  const weight = food.serving_weight_g ? `，約 ${food.serving_weight_g}g` : "";
+  const source = basis && basis !== "每 100g" ? ` | 原始基準: ${basis}${weight}` : "";
+  return `蛋白質: ${food.protein}g | 碳水: ${food.carbs}g | 脂肪: ${food.fat}g | 熱量: ${food.calories}kcal (每 100g)${source}`;
 }
 
 function selectedFood() {
   const foods = allFoods();
   return foods.find((food) => food.id === $("foodSelect").value) || foods[0];
+}
+
+function getFoodSearchTerm() {
+  return ($("foodSearch")?.value || "").trim().toLocaleLowerCase("zh-TW");
+}
+
+function foodMatchesSearch(food, searchTerm) {
+  if (!searchTerm) return true;
+  const searchableText = [food.name, foodCategoryLabel(food), food.id].join(" ").toLocaleLowerCase("zh-TW");
+  return searchableText.includes(searchTerm);
+}
+
+function clearFoodSearch() {
+  const searchInput = $("foodSearch");
+  if (searchInput) searchInput.value = "";
 }
 
 function renderFoods() {
@@ -403,10 +421,12 @@ function renderFoods() {
 
 function renderFoodPicker() {
   const foods = allFoods();
+  const searchTerm = getFoodSearchTerm();
+  const visibleFoods = foods.filter((food) => foodMatchesSearch(food, searchTerm));
   const selectedId = selectedFood()?.id;
-  $("foodPickerCount").textContent = `${foods.length} 項`;
-  $("foodPickerList").innerHTML = foods.length
-    ? foods
+  $("foodPickerCount").textContent = searchTerm ? `${visibleFoods.length} / ${foods.length} 項` : `${foods.length} 項`;
+  $("foodPickerList").innerHTML = visibleFoods.length
+    ? visibleFoods
         .map(
           (food) => `
         <button class="food-option-card${food.id === selectedId ? " is-active" : ""}" type="button" data-select-food="${food.id}">
@@ -419,6 +439,8 @@ function renderFoodPicker() {
         </button>`
         )
         .join("")
+    : foods.length
+      ? `<div class="empty compact-empty">找不到符合「${escapeHtml($("foodSearch").value.trim())}」的食物。</div>`
     : `<div class="empty compact-empty">食物庫目前沒有資料。先新增食物後就能選取。</div>`;
 }
 
@@ -464,9 +486,11 @@ function renderFoodLibrary() {
 }
 
 function openFoodPicker() {
+  clearFoodSearch();
   $("foodPickerPanel").hidden = false;
   $("foodPickerBtn").setAttribute("aria-expanded", "true");
   renderFoodPicker();
+  $("foodSearch")?.focus();
 }
 
 function closeFoodPicker() {
@@ -900,10 +924,12 @@ function bindEvents() {
     }
   });
   $("closeFoodPickerBtn").addEventListener("click", closeFoodPicker);
+  $("foodSearch").addEventListener("input", renderFoodPicker);
   $("foodPickerList").addEventListener("click", (event) => {
     const option = event.target.closest("[data-select-food]");
     if (!option) return;
     $("foodSelect").value = option.dataset.selectFood;
+    clearFoodSearch();
     renderFoods();
     renderFoodPicker();
     closeFoodPicker();
