@@ -1,4 +1,4 @@
-const CACHE_NAME = "fitplan-pwa-v5";
+const CACHE_NAME = "fitplan-pwa-v7";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -9,13 +9,15 @@ const APP_SHELL = [
   "./pwa.js?v=20260613-mobile-2",
   "./pwa.js",
   "./styles.css",
-  "./styles.css?v=20260614-supabase",
+  "./styles.css?v=20260614-scrollfix",
   "./responsive.css",
   "./responsive.css?v=20260613-mobile-2",
   "./app.js",
-  "./app.js?v=20260614-supabase",
-  "./supabase-config.js?v=20260614-supabase",
-  "./supabase-foods.js?v=20260614-supabase",
+  "./app.js?v=20260614-serving-basis",
+  "./food-basis.js",
+  "./food-basis.js?v=20260614-serving-basis",
+  "./supabase-config.js?v=20260614-serving-basis",
+  "./supabase-foods.js?v=20260614-serving-basis",
   "./manifest.webmanifest",
   "./assets/icons/icon-192.png",
   "./assets/icons/icon-512.png"
