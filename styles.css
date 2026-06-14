@@ -795,7 +795,9 @@ select:focus {
   right: var(--panel-pad);
   top: 112px;
   z-index: 20;
-  max-height: min(520px, calc(100vh - 160px));
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  height: min(520px, calc(100vh - 160px));
   padding: 14px;
   border: 1px solid rgba(47, 125, 79, 0.18);
   border-radius: 8px;
@@ -845,8 +847,9 @@ select:focus {
 
 .food-picker-list {
   display: grid;
+  align-content: start;
   gap: 10px;
-  max-height: min(430px, calc(100vh - 240px));
+  min-height: 0;
   margin-top: 12px;
   padding-right: 3px;
   overflow-y: auto;
@@ -1239,12 +1242,8 @@ select:focus {
     top: max(74px, env(safe-area-inset-top));
     right: 12px;
     left: 12px;
-    max-height: calc(100vh - 96px);
+    height: calc(100vh - 96px);
     padding: 14px;
-  }
-
-  .food-picker-list {
-    max-height: calc(100vh - 180px);
   }
 
   .rings {
