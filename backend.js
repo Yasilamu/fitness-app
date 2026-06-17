@@ -39,7 +39,13 @@ function escapeHtml(value) {
 }
 
 function formatFood(food) {
-  return `${food.calories} kcal/100g · 蛋白質 ${food.protein}g / 碳水 ${food.carbs}g / 脂肪 ${food.fat}g`;
+  const basis = window.FitPlanFoodBasis?.servingLabel(food) || "每 100g";
+  const weight = food.serving_weight_g ? `，約 ${food.serving_weight_g}g` : "";
+  const serving =
+    food.serving_calories || food.serving_protein || food.serving_carbs || food.serving_fat
+      ? `原始輸入 ${basis}${weight}: ${food.serving_calories} kcal · 蛋白質 ${food.serving_protein}g / 碳水 ${food.serving_carbs}g / 脂肪 ${food.serving_fat}g`
+      : `原始輸入 ${basis}${weight}`;
+  return `${serving} · 換算每 100g: ${food.calories} kcal · 蛋白質 ${food.protein}g / 碳水 ${food.carbs}g / 脂肪 ${food.fat}g`;
 }
 
 function render() {

@@ -152,6 +152,16 @@ body[data-step="mode"] .app-shell {
     grid-column: 1 / -1;
     min-width: 0;
     max-width: none;
+    width: 100%;
+  }
+
+  .date-picker input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .metrics .metric-label-row {
+    align-items: flex-start;
   }
 
   .settings-menu {

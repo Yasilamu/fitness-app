@@ -52,4 +52,54 @@ node .tools/static-server.js 8088 127.0.0.1
 3. 將 `supabase-config.js` 裡的 `url` 和 `anonKey` 填入公開值。
 4. 部署到 GitHub Pages 後，手機端開啟 `https://yasilamu.github.io/fitness-app/`，前台與 `backend.html` 會讀取同一份 Supabase 食物庫。
 
-注意：前端只能放公開 anon/publishable key，不能放 `service_role` 或 secret key。v1 僅同步食物庫讀取；個人紀錄、身體資料、自訂食物仍保存在各裝置本機。
+### 後台輸入食物基準
+
+食物資料可以不用都用 100g 輸入。到 Supabase 的 `foods` 表新增或修改食物時，請填這組「原始輸入基準」欄位：
+
+- `serving_amount`: 這份食物的基準量，例如 `50`、`250`、`1`
+- `serving_unit`: 基準單位，例如 `g`、`ml`、`顆`、`包`、`份`
+- `serving_weight_g`: 這份食物約等於幾克，系統用它換算每 100g
+- `serving_calories`: 這個基準量下的熱量
+- `serving_protein`: 這個基準量下的蛋白質
+- `serving_carbs`: 這個基準量下的碳水
+- `serving_fat`: 這個基準量下的脂肪
+
+資料庫會用 `serving_weight_g` 自動換算 `calories`、`protein`、`carbs`、`fat` 成每 100g，前台仍用每 100g 搭配使用者輸入克數計算。
+
+範例：一顆雞蛋約 50g，營養值是 72 kcal、蛋白質 6.3g、碳水 0.4g、脂肪 4.8g，就填：
+
+```sql
+insert into public.foods (
+  id, name,
+  serving_amount, serving_unit, serving_weight_g,
+  serving_calories, serving_protein, serving_carbs, serving_fat,
+  category, sort_order
+)
+values (
+  'egg',
+  '全蛋',
+  1,
+  '顆',
+  50,
+  72,
+  6.3,
+  0.4,
+  4.8,
+  'protein',
+  30
+)
+on conflict (id) do update set
+  name = excluded.name,
+  serving_amount = excluded.serving_amount,
+  serving_unit = excluded.serving_unit,
+  serving_weight_g = excluded.serving_weight_g,
+  serving_calories = excluded.serving_calories,
+  serving_protein = excluded.serving_protein,
+  serving_carbs = excluded.serving_carbs,
+  serving_fat = excluded.serving_fat,
+  category = excluded.category,
+  sort_order = excluded.sort_order,
+  is_active = true;
+```
+
+注意：前端只能放公開 anon/publishable key，不能放 `service_role` 或 secret key。目前前台僅同步食物庫讀取；個人紀錄、身體資料、自訂食物仍保存在各裝置本機。

@@ -24,7 +24,7 @@
           </div>
           <p class="sync-status" id="backendSyncStatus">使用本機預設食物庫。</p>
           <div class="backend-note">
-            v1 食物庫由 Supabase Dashboard 維護。手機端與前台會讀取同一份 Supabase 資料；若尚未填入 Supabase 設定，會暫時顯示本機預設資料。
+            食物庫由 Supabase Dashboard 維護。輸入食物時可填自訂基準，例如每 1 顆、每 1 包、每 250ml；資料庫會自動換算成每 100g 供前台計算。
           </div>
         </section>
 
@@ -37,8 +37,9 @@
       </section>
     </main>
 
-    <script src="supabase-config.js?v=20260614-supabase"></script>
-    <script src="supabase-foods.js?v=20260614-supabase"></script>
-    <script src="backend.js?v=20260614-supabase"></script>
+    <script src="food-basis.js?v=20260614-serving-basis"></script>
+    <script src="supabase-config.js?v=20260614-serving-basis"></script>
+    <script src="supabase-foods.js?v=20260614-serving-basis"></script>
+    <script src="backend.js?v=20260614-serving-basis"></script>
   </body>
 </html>

@@ -86,15 +86,32 @@ const $ = (id) => document.getElementById(id);
 const storageKey = "fitplan-state-v1";
 const dataChannel = "fitplan-data-sync";
 const syncChannel = "BroadcastChannel" in window ? new BroadcastChannel(dataChannel) : null;
+let lastKnownTodayKey = todayKey();
 
-function todayKey() {
-  return new Date().toISOString().slice(0, 10);
+function todayKey(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 function daysBetween(startDate, endDate) {
   const start = new Date(`${startDate}T00:00:00`);
   const end = new Date(`${endDate}T00:00:00`);
   return Math.max(0, Math.floor((end - start) / (24 * 60 * 60 * 1000)));
+}
+
+function carbCycleDayInfo(dateKey = state.selectedDate) {
+  const cycleLength = state.cyclePattern === "4low1high" ? 5 : 4;
+  const highDayIndex = cycleLength - 1;
+  const cycleStart = (state.dietStartDate || dateKey).slice(0, 10);
+  const dayIndex = daysBetween(cycleStart, dateKey) % cycleLength;
+  const isHighDay = dayIndex === highDayIndex;
+  return {
+    isHighDay,
+    label: isHighDay ? "高碳日" : "低碳日",
+    note: isHighDay ? "所選日期是高碳日" : "所選日期是低碳日"
+  };
 }
 
 function readSavedState() {
@@ -117,17 +134,28 @@ function syncBackendFoodsFromStorage() {
   return true;
 }
 
+function syncDateAfterDayChange() {
+  const currentDate = todayKey();
+  if (currentDate === lastKnownTodayKey) return;
+  lastKnownTodayKey = currentDate;
+  state.selectedDate = currentDate;
+  state.log = currentLog();
+  state.plan = currentPlan();
+  render();
+}
+
 function loadState() {
   const saved = readSavedState();
   const cachedCloudFoods = window.FitPlanSupabaseFoods?.readCachedFoods?.();
   const currentDate = todayKey();
+  lastKnownTodayKey = currentDate;
   state.step = saved.step || "profile";
   state.mode = saved.mode || "calorie";
   state.dietMode = saved.dietMode || "general";
   state.cyclePattern = saved.cyclePattern || "3low1high";
   state.dietStartDate = saved.dietStartDate || new Date().toISOString();
   state.dietRatios = mergeDietRatios(saved.dietRatios);
-  state.selectedDate = saved.selectedDate || currentDate;
+  state.selectedDate = currentDate;
   state.backendFoods = cachedCloudFoods?.foods || saved.backendFoods || structuredClone(defaultFoods);
   if (cachedCloudFoods?.foods?.length) {
     state.foodLibrarySync = {
@@ -324,11 +352,8 @@ function macroTargets(profile = getProfile()) {
   }
 
   if (state.dietMode === "carbCycle") {
-    const cycleLength = state.cyclePattern === "4low1high" ? 5 : 4;
-    const highDayIndex = cycleLength - 1;
-    const cycleStart = (state.dietStartDate || state.selectedDate).slice(0, 10);
-    const dayIndex = daysBetween(cycleStart, state.selectedDate) % cycleLength;
-    const isHighDay = dayIndex === highDayIndex;
+    const cycleDay = carbCycleDayInfo();
+    const isHighDay = cycleDay.isHighDay;
     const ratio = isHighDay ? state.dietRatios.carbCycle.high : state.dietRatios.carbCycle.low;
     return ratioToTargets(profile.weight, ratio, isHighDay ? "所選日期是高碳日" : "所選日期是低碳日");
   }
@@ -640,6 +665,13 @@ function renderProgress() {
   $("modeBmrValue").textContent = round(profile.bmr);
   $("modeTdeeValue").textContent = round(profile.tdee);
   $("targetValue").textContent = round(target.calories);
+  const cycleDayBadge = $("cycleDayBadge");
+  if (state.dietMode === "carbCycle") {
+    cycleDayBadge.textContent = carbCycleDayInfo().label;
+    cycleDayBadge.hidden = false;
+  } else {
+    cycleDayBadge.hidden = true;
+  }
   const proteinKcal = target.protein * 4;
   const carbsKcal = target.carbs * 4;
   const fatKcal = target.fat * 9;
@@ -848,6 +880,11 @@ function bindEvents() {
     state.selectedDate = event.target.value || todayKey();
     render();
   });
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) syncDateAfterDayChange();
+  });
+  window.addEventListener("focus", syncDateAfterDayChange);
+  setInterval(syncDateAfterDayChange, 60 * 1000);
 
   ["height", "weight", "age", "sex", "activity", "goal"].forEach((id) => {
     $(id).addEventListener("input", render);

@@ -590,6 +590,12 @@ select:focus {
 .date-picker {
   min-width: 180px;
   max-width: 220px;
+  width: min(100%, 220px);
+}
+
+.date-picker input {
+  width: 100%;
+  min-width: 0;
 }
 
 .topbar h2 {
@@ -613,6 +619,31 @@ select:focus {
   font-size: 0.8rem;
   font-weight: 800;
   text-transform: uppercase;
+}
+
+.metrics .metric-label-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.metrics .metric-label-row > span {
+  display: inline-flex;
+}
+
+.cycle-day-badge {
+  align-items: center;
+  min-height: 22px;
+  padding: 3px 8px;
+  border: 1px solid rgba(47, 125, 79, 0.24);
+  border-radius: 999px;
+  background: rgba(47, 125, 79, 0.1);
+  color: var(--accent-strong);
+  font-size: 0.72rem;
+  line-height: 1;
+  text-transform: none;
+  white-space: nowrap;
 }
 
 .metrics strong {
@@ -1199,6 +1230,16 @@ select:focus {
     grid-column: 1 / -1;
     min-width: 0;
     max-width: none;
+    width: 100%;
+  }
+
+  .date-picker input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .metrics .metric-label-row {
+    align-items: flex-start;
   }
 
   .settings-menu {

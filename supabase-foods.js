@@ -28,7 +28,14 @@
       protein: numberValue(row.protein),
       carbs: numberValue(row.carbs),
       fat: numberValue(row.fat),
-      category: row.category ? String(row.category) : "other"
+      category: row.category ? String(row.category) : "other",
+      serving_amount: numberValue(row.serving_amount) || 100,
+      serving_unit: row.serving_unit ? String(row.serving_unit) : "g",
+      serving_weight_g: numberValue(row.serving_weight_g) || numberValue(row.serving_amount) || 100,
+      serving_calories: numberValue(row.serving_calories),
+      serving_protein: numberValue(row.serving_protein),
+      serving_carbs: numberValue(row.serving_carbs),
+      serving_fat: numberValue(row.serving_fat)
     };
   }
 
@@ -57,7 +64,8 @@
 
     const url = projectUrl();
     const anonKey = String(config.anonKey).trim();
-    const query = "select=id,name,calories,protein,carbs,fat,category&is_active=eq.true&order=sort_order.asc,name.asc";
+    const query =
+      "select=id,name,calories,protein,carbs,fat,category,serving_amount,serving_unit,serving_weight_g,serving_calories,serving_protein,serving_carbs,serving_fat&is_active=eq.true&order=sort_order.asc,name.asc";
     const response = await fetch(`${url}/rest/v1/foods?${query}`, {
       headers: {
         apikey: anonKey,
