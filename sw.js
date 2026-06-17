@@ -1,4 +1,4 @@
-const CACHE_NAME = "fitplan-pwa-v7";
+const CACHE_NAME = "fitplan-pwa-v8";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -9,7 +9,7 @@ const APP_SHELL = [
   "./pwa.js?v=20260613-mobile-2",
   "./pwa.js",
   "./styles.css",
-  "./styles.css?v=20260614-scrollfix",
+  "./styles.css?v=20260617-date-mobile-fix",
   "./responsive.css",
   "./responsive.css?v=20260613-mobile-2",
   "./app.js",

@@ -89,6 +89,9 @@ body[data-step="mode"] .app-shell {
 
   .app-shell {
     gap: 12px;
+    width: 100%;
+    max-width: 100vw;
+    overflow: hidden;
   }
 
   .section-heading {
@@ -102,10 +105,14 @@ body[data-step="mode"] .app-shell {
     align-items: start;
     min-height: auto;
     gap: 10px;
+    width: 100%;
+    max-width: calc(100vw - (var(--page-pad) * 2));
+    overflow: hidden;
   }
 
   .topbar > div:first-child {
     min-width: 0;
+    max-width: 100%;
   }
 
   .metrics,
@@ -152,12 +159,19 @@ body[data-step="mode"] .app-shell {
     grid-column: 1 / -1;
     min-width: 0;
     max-width: none;
-    width: 100%;
+    width: min(100%, calc(100vw - (var(--page-pad) * 2)));
+    justify-self: start;
+    overflow: hidden;
   }
 
   .date-picker input {
+    display: block;
     width: 100%;
     min-width: 0;
+    max-width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    text-align: center;
   }
 
   .metrics .metric-label-row {

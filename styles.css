@@ -1163,6 +1163,9 @@ select:focus {
 
   .app-shell {
     gap: 12px;
+    width: 100%;
+    max-width: 100vw;
+    overflow: hidden;
   }
 
   .topbar,
@@ -1175,10 +1178,14 @@ select:focus {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 44px;
     align-items: start;
+    width: 100%;
+    max-width: calc(100vw - (var(--page-pad) * 2));
+    overflow: hidden;
   }
 
   .topbar > div:first-child {
     min-width: 0;
+    max-width: 100%;
   }
 
   .metrics,
@@ -1230,12 +1237,19 @@ select:focus {
     grid-column: 1 / -1;
     min-width: 0;
     max-width: none;
-    width: 100%;
+    width: min(100%, calc(100vw - (var(--page-pad) * 2)));
+    justify-self: start;
+    overflow: hidden;
   }
 
   .date-picker input {
+    display: block;
     width: 100%;
     min-width: 0;
+    max-width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    text-align: center;
   }
 
   .metrics .metric-label-row {
