@@ -115,7 +115,7 @@ function resolvedDark() {
 }
 
 const paletteChrome = {
-  forest: { light: "#f3f5f1", dark: "#101512" },
+  forest: { light: "#f4f6f2", dark: "#101512" },
   indigo: { light: "#f3f1fb", dark: "#0e0c18" },
   crimson: { light: "#fbf3f4", dark: "#160d10" },
   lime: { light: "#f2f4f8", dark: "#0c1018" }
