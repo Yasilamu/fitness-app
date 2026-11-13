@@ -114,11 +114,29 @@ function resolvedDark() {
   return window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
 
+const paletteChrome = {
+  forest: { light: "#f3f5f1", dark: "#101512" },
+  indigo: { light: "#f3f1fb", dark: "#0e0c18" },
+  crimson: { light: "#fbf3f4", dark: "#160d10" },
+  lime: { light: "#f2f4f8", dark: "#0c1018" }
+};
+
 function applyTheme() {
+  const palette = core.paletteIds.includes(state.palette) ? state.palette : "forest";
+  state.palette = palette;
   document.documentElement.dataset.theme = state.theme || "system";
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", resolvedDark() ? "#101512" : "#f3f5f1");
+  document.documentElement.dataset.palette = palette;
+  const chrome = paletteChrome[palette];
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", resolvedDark() ? chrome.dark : chrome.light);
   document.querySelectorAll("[data-theme-value]").forEach((button) => {
-    button.classList.toggle("is-active", button.dataset.themeValue === (state.theme || "system"));
+    const active = button.dataset.themeValue === (state.theme || "system");
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", active ? "true" : "false");
+  });
+  document.querySelectorAll("[data-palette-value]").forEach((button) => {
+    const active = button.dataset.paletteValue === palette;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", active ? "true" : "false");
   });
 }
 
@@ -1232,6 +1250,13 @@ function bindEvents() {
   document.querySelectorAll("[data-theme-value]").forEach((button) => {
     button.addEventListener("click", () => {
       state.theme = button.dataset.themeValue;
+      applyTheme();
+      saveState();
+    });
+  });
+  document.querySelectorAll("[data-palette-value]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.palette = button.dataset.paletteValue;
       applyTheme();
       saveState();
     });

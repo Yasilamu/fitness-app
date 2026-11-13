@@ -164,9 +164,18 @@ assert.equal(keptMaintain.profile.goal, "0");
 assert.equal(keptMaintain.profile.sex, "female");
 assert.equal(keptMaintain.step, "progress");
 assert.equal(keptMaintain.theme, "dark");
+assert.equal(keptMaintain.palette, "forest");
 assert.equal(keptMaintain.weightLog.length, 2);
 assert.equal(keptMaintain.weightLog[1].kg, 71.8);
 assert.equal(keptMaintain.workoutsByDate["2026-11-12"][0].sets[0].weight, 100);
+
+const withPalette = core.migrateSaved({ version: 2, palette: "crimson", theme: "light" }, { now });
+assert.equal(withPalette.palette, "crimson");
+assert.equal(withPalette.theme, "light");
+assert.equal(core.serializeState(withPalette).palette, "crimson");
+assert.equal(core.migrateSaved({ version: 2, palette: "nope" }, { now }).palette, "forest");
+assert.equal(core.migrateSaved(core.serializeState(withPalette), { now }).palette, "crimson");
+assert.equal(core.migrateSaved({}, { now }).palette, "forest");
 
 const roundTrip = core.migrateSaved(core.serializeState(keptMaintain), { now });
 assert.equal(roundTrip.workoutsByDate["2026-11-12"][0].name, "深蹲");

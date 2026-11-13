@@ -81,6 +81,12 @@
     keto: "生酮飲食會把碳水壓到很低，主要用蛋白質與脂肪補足今日熱量。"
   };
 
+  const paletteIds = ["forest", "indigo", "crimson", "lime"];
+
+  function normalizePalette(value) {
+    return paletteIds.includes(value) ? value : "forest";
+  }
+
   const stepMap = {
     profile: "settings",
     mode: "settings",
@@ -266,6 +272,7 @@
         ? source.customExercises.filter((item) => item && item.id && item.name)
         : [],
       theme: ["system", "light", "dark"].includes(source.theme) ? source.theme : "system",
+      palette: normalizePalette(source.palette),
       profileTouched: isLegacy ? Boolean(source.profile) : Boolean(source.profileTouched),
       hintDismissed: Boolean(source.hintDismissed),
       legacyGoalNote
@@ -294,6 +301,7 @@
       workoutsByDate: state.workoutsByDate,
       customExercises: state.customExercises,
       theme: state.theme,
+      palette: normalizePalette(state.palette),
       profileTouched: state.profileTouched,
       hintDismissed: state.hintDismissed,
       legacyGoalNote: state.legacyGoalNote,
@@ -740,6 +748,7 @@
 
   const api = {
     storageKey,
+    paletteIds,
     defaultFoods,
     defaultExercises,
     defaultDietRatios,

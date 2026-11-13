@@ -13,13 +13,16 @@
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="assets/icons/icon.svg" />
     <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
-    <link rel="stylesheet" href="styles.css?v=20261113-redesign" />
+    <link rel="stylesheet" href="styles.css?v=20261113-palettes" />
     <script>
       try {
         const saved = JSON.parse(localStorage.getItem("fitplan-state-v1") || "{}");
+        const palettes = ["forest", "indigo", "crimson", "lime"];
         document.documentElement.dataset.theme = saved.theme || "system";
+        document.documentElement.dataset.palette = palettes.includes(saved.palette) ? saved.palette : "forest";
       } catch (error) {
         document.documentElement.dataset.theme = "system";
+        document.documentElement.dataset.palette = "forest";
       }
     </script>
   </head>
@@ -389,10 +392,31 @@
                 <div class="section-head">
                   <h2>外觀</h2>
                 </div>
-                <div class="segmented" role="radiogroup" aria-label="外觀">
-                  <button type="button" data-theme-value="system">跟隨系統</button>
-                  <button type="button" data-theme-value="light">淺色</button>
-                  <button type="button" data-theme-value="dark">深色</button>
+                <div class="stack">
+                  <div class="segmented" role="group" aria-label="明暗">
+                    <button type="button" data-theme-value="system" aria-pressed="false">跟隨系統</button>
+                    <button type="button" data-theme-value="light" aria-pressed="false">淺色</button>
+                    <button type="button" data-theme-value="dark" aria-pressed="false">深色</button>
+                  </div>
+                  <p class="subhead">配色</p>
+                  <div class="palette-picker" role="group" aria-label="配色">
+                    <button type="button" data-palette-value="forest" aria-pressed="false">
+                      <span class="palette-swatch" aria-hidden="true"><i></i><i></i></span>
+                      <span>森林珊瑚</span>
+                    </button>
+                    <button type="button" data-palette-value="indigo" aria-pressed="false">
+                      <span class="palette-swatch" aria-hidden="true"><i></i><i></i></span>
+                      <span>靛藍琥珀</span>
+                    </button>
+                    <button type="button" data-palette-value="crimson" aria-pressed="false">
+                      <span class="palette-swatch" aria-hidden="true"><i></i><i></i></span>
+                      <span>緋紅青碧</span>
+                    </button>
+                    <button type="button" data-palette-value="lime" aria-pressed="false">
+                      <span class="palette-swatch" aria-hidden="true"><i></i><i></i></span>
+                      <span>墨藍萊姆</span>
+                    </button>
+                  </div>
                 </div>
               </section>
 
@@ -472,10 +496,10 @@
       </form>
     </dialog>
 
-    <script src="food-basis.js?v=20261113-redesign"></script>
-    <script src="supabase-config.js?v=20261113-redesign"></script>
-    <script src="supabase-foods.js?v=20261113-redesign"></script>
-    <script src="fitplan-core.js?v=20261113-redesign"></script>
-    <script src="app.js?v=20261113-redesign"></script>
+    <script src="food-basis.js?v=20261113-palettes"></script>
+    <script src="supabase-config.js?v=20261113-palettes"></script>
+    <script src="supabase-foods.js?v=20261113-palettes"></script>
+    <script src="fitplan-core.js?v=20261113-palettes"></script>
+    <script src="app.js?v=20261113-palettes"></script>
   </body>
 </html>
