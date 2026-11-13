@@ -1,40 +1,38 @@
-const CACHE_NAME = "fitplan-pwa-v8";
+const CACHE_NAME = "fitplan-pwa-v12";
+const VERSION = "20261113-track";
+const ASSETS = [
+  "index.html",
+  "backend.html",
+  "styles.css",
+  "app.js",
+  "fitplan-core.js",
+  "food-basis.js",
+  "supabase-config.js",
+  "supabase-foods.js",
+  "backend.js",
+  "pwa.css",
+  "pwa.js",
+  "responsive.css"
+];
+
 const APP_SHELL = [
   "./",
-  "./index.html",
-  "./index.html?v=20260614-supabase",
   "./pwa.html",
-  "./pwa.css?v=20260613-mobile-2",
-  "./pwa.css",
-  "./pwa.js?v=20260613-mobile-2",
-  "./pwa.js",
-  "./styles.css",
-  "./styles.css?v=20260617-date-mobile-fix",
-  "./responsive.css",
-  "./responsive.css?v=20260613-mobile-2",
-  "./app.js",
-  "./app.js?v=20260614-serving-basis",
-  "./food-basis.js",
-  "./food-basis.js?v=20260614-serving-basis",
-  "./supabase-config.js?v=20260614-serving-basis",
-  "./supabase-foods.js?v=20260614-serving-basis",
   "./manifest.webmanifest",
   "./assets/icons/icon-192.png",
-  "./assets/icons/icon-512.png"
+  "./assets/icons/icon-512.png",
+  "./assets/icons/icon.svg",
+  ...ASSETS.flatMap((file) => [`./${file}`, `./${file}?v=${VERSION}`])
 ];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL))
-  );
+  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)));
   self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))
-    )
+    caches.keys().then((keys) => Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))))
   );
   self.clients.claim();
 });
@@ -52,7 +50,7 @@ self.addEventListener("fetch", (event) => {
       .catch(() =>
         caches.match(event.request).then((cached) => {
           if (cached) return cached;
-          return caches.match("./pwa.html");
+          return caches.match("./index.html");
         })
       )
   );

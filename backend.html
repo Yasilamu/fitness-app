@@ -2,44 +2,39 @@
 <html lang="zh-Hant">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FitPlan 後台食物庫</title>
-    <link rel="stylesheet" href="styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f6f2" />
+    <title>FitPlan 雲端食物庫</title>
+    <link rel="stylesheet" href="styles.css?v=20261113-track" />
   </head>
-  <body data-step="dashboard">
-    <main class="app-shell">
-      <section class="workspace flow-view is-active">
-        <header class="topbar">
-          <div>
-            <p class="today">後台管理</p>
-            <h2>後台食物庫</h2>
-          </div>
-          <a class="secondary-button" href="index.html">返回前台</a>
-        </header>
-
-        <section class="panel backend-page-panel">
-          <div class="section-heading">
-            <h2>雲端食物庫狀態</h2>
-            <span id="backendCount">0 項</span>
-          </div>
-          <p class="sync-status" id="backendSyncStatus">使用本機預設食物庫。</p>
-          <div class="backend-note">
-            食物庫由 Supabase Dashboard 維護。輸入食物時可填自訂基準，例如每 1 顆、每 1 包、每 250ml；資料庫會自動換算成每 100g 供前台計算。
-          </div>
-        </section>
-
-        <section class="panel">
-          <div class="section-heading">
-            <h2>食物清單</h2>
-          </div>
-          <div class="food-database" id="backendFoodDatabase"></div>
-        </section>
+  <body>
+    <main class="page">
+      <header class="topbar">
+        <div class="title-block">
+          <p id="pageKicker">雲端</p>
+          <h1>食物庫狀態</h1>
+        </div>
+        <a class="btn" href="index.html">返回 FitPlan</a>
+      </header>
+      <section class="panel">
+        <div class="section-head">
+          <h2>同步狀態</h2>
+          <span id="backendCount">0 項</span>
+        </div>
+        <p id="backendSyncStatus" class="muted">使用本機預設食物庫。</p>
+        <p class="muted">食物庫由 Supabase Dashboard 維護。輸入時可填每 1 顆、每 1 包或每 250ml，資料庫會換算成每 100g 供前台計算。</p>
+      </section>
+      <section class="panel">
+        <div class="section-head">
+          <h2>食物清單</h2>
+        </div>
+        <div id="backendFoodDatabase" class="stack"></div>
       </section>
     </main>
-
-    <script src="food-basis.js?v=20260614-serving-basis"></script>
-    <script src="supabase-config.js?v=20260614-serving-basis"></script>
-    <script src="supabase-foods.js?v=20260614-serving-basis"></script>
-    <script src="backend.js?v=20260614-serving-basis"></script>
+    <script src="food-basis.js?v=20261113-track"></script>
+    <script src="supabase-config.js?v=20261113-track"></script>
+    <script src="supabase-foods.js?v=20261113-track"></script>
+    <script src="fitplan-core.js?v=20261113-track"></script>
+    <script src="backend.js?v=20261113-track"></script>
   </body>
 </html>

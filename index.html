@@ -2,416 +2,504 @@
 <html lang="zh-Hant">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#2f7d4f" />
-    <meta name="description" content="FitPlan 自主健身飲食計劃，支援 TDEE 減脂、飲食模式與每日紀錄。" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f4f6f2" />
+    <meta name="description" content="FitPlan 減脂飲食與重量訓練紀錄。估算 TDEE、追蹤熱量營養素、記錄組數，資料留在這台裝置。" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="FitPlan" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <title>FitPlan 自主健身飲食計劃</title>
+    <title>FitPlan 飲食與訓練</title>
     <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="assets/icons/icon.svg" />
     <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
-    <link rel="stylesheet" href="styles.css?v=20260617-date-mobile-fix" />
+    <link rel="stylesheet" href="styles.css?v=20261113-track" />
+    <script>
+      try {
+        const saved = JSON.parse(localStorage.getItem("fitplan-state-v1") || "{}");
+        const palettes = ["forest", "indigo", "crimson", "lime"];
+        document.documentElement.dataset.theme = saved.theme || "system";
+        document.documentElement.dataset.palette = palettes.includes(saved.palette) ? saved.palette : "forest";
+      } catch (error) {
+        document.documentElement.dataset.theme = "system";
+        document.documentElement.dataset.palette = "forest";
+      }
+    </script>
   </head>
   <body>
-    <main class="app-shell">
-      <aside class="sidebar">
+    <div class="app">
+      <aside class="tabbar">
         <div class="brand">
-          <div class="brand-mark" aria-hidden="true">
-            <svg viewBox="0 0 32 32" role="img">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32">
               <path d="M7 19h3v-6H7v6Zm15 0h3v-6h-3v6ZM11 17h10v-2H11v2Zm-7 1h2v-4H4v4Zm22 0h2v-4h-2v4Z" />
               <path d="M16 29c6.6 0 12-5.4 12-12S22.6 5 16 5 4 10.4 4 17s5.4 12 12 12Z" fill="none" />
             </svg>
-          </div>
-          <div>
-            <h1>FitPlan</h1>
-            <p>自動估算與每日追蹤</p>
-          </div>
+          </span>
+          <span>
+            <strong>FitPlan</strong>
+            <small>減脂與訓練</small>
+          </span>
         </div>
-
-        <nav class="flow-steps" aria-label="設定流程">
-          <span class="step-dot is-active" data-step-dot="profile">1</span>
-          <span class="step-dot" data-step-dot="mode">2</span>
-          <span class="step-dot" data-step-dot="dashboard">3</span>
+        <nav aria-label="主要功能">
+          <button type="button" data-nav="today" class="is-active" aria-current="page">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1Z" /></svg>
+            <span>今日</span>
+          </button>
+          <button type="button" data-nav="diet">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3v8a3 3 0 0 0 6 0V3" /><path d="M9 3v18" /><path d="M16 3c2.5 3 2.5 6 0 9 2.2.4 3.5 2 3.5 4.2 0 2.4-1.8 4.8-4.5 4.8" /></svg>
+            <span>飲食</span>
+          </button>
+          <button type="button" data-nav="train">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9v6M18 9v6M3 10v4M21 10v4M6 12h12M4.5 8.5v7M19.5 8.5v7" /></svg>
+            <span>訓練</span>
+          </button>
+          <button type="button" data-nav="progress">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5M4 19h16" /><path d="m7 14 4-4 3 3 5-6" /></svg>
+            <span>進度</span>
+          </button>
+          <button type="button" data-nav="settings">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /><circle cx="8" cy="7" r="1.6" fill="currentColor" stroke="none" /><circle cx="15" cy="12" r="1.6" fill="currentColor" stroke="none" /><circle cx="10" cy="17" r="1.6" fill="currentColor" stroke="none" /></svg>
+            <span>設定</span>
+          </button>
         </nav>
-
-        <section class="panel profile-panel flow-view is-active" id="profileView" aria-labelledby="profile-title">
-          <div class="section-heading">
-            <h2 id="profile-title">個人設定</h2>
-            <button class="icon-button" id="resetBtn" type="button" title="重置今日紀錄" aria-label="重置今日紀錄">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4 4v6h6M20 20v-6h-6" />
-                <path d="M20 9A8 8 0 0 0 6.7 5M4 15a8 8 0 0 0 13.3 4" />
-              </svg>
-            </button>
-          </div>
-
-          <form id="profileForm" class="form-grid">
-            <label>
-              身高 cm
-              <input id="height" type="number" min="80" max="230" value="170" />
-            </label>
-            <label>
-              體重 kg
-              <input id="weight" type="number" min="30" max="250" value="70" />
-            </label>
-            <label>
-              年齡
-              <input id="age" type="number" min="12" max="90" value="28" />
-            </label>
-            <label>
-              生理性別
-              <select id="sex">
-                <option value="male">男性</option>
-                <option value="female">女性</option>
-              </select>
-            </label>
-            <label class="wide">
-              運動習慣
-              <select id="activity">
-                <option value="1.2">久坐，幾乎不運動</option>
-                <option value="1.375">每週 1-3 天輕量運動</option>
-                <option value="1.55" selected>每週 3-5 天規律訓練</option>
-                <option value="1.725">每週 6-7 天高強度</option>
-                <option value="1.9">體力工作或雙練</option>
-              </select>
-            </label>
-            <label class="wide">
-              目標
-              <select id="goal">
-                <option value="-15">減脂：TDEE -15%</option>
-                <option value="0" selected>維持：TDEE</option>
-                <option value="10">增肌：TDEE +10%</option>
-              </select>
-            </label>
-            <button class="primary-button wide" type="submit">下一步：選擇模式</button>
-          </form>
-        </section>
-
-        <section class="panel flow-view" id="modeView" aria-labelledby="mode-title">
-          <h2 id="mode-title">追蹤模式</h2>
-          <div class="mode-control" role="radiogroup" aria-label="追蹤模式">
-            <button class="mode is-active" type="button" data-mode="calorie">熱量</button>
-            <button class="mode" type="button" data-mode="macro">營養素</button>
-            <button class="mode" type="button" data-mode="balanced">綜合</button>
-          </div>
-          <p class="mode-copy" id="modeCopy">優先看今日熱量是否接近目標，適合剛開始建立紀錄習慣。</p>
-
-          <div class="energy-summary" aria-label="身體熱量估算">
-            <div>
-              <span>BMR</span>
-              <strong id="modeBmrValue">0</strong>
-              <small>基礎代謝 kcal</small>
-            </div>
-            <div>
-              <span>TDEE</span>
-              <strong id="modeTdeeValue">0</strong>
-              <small>每日總消耗 kcal</small>
-            </div>
-          </div>
-
-          <div class="subsection-heading">
-            <h3>飲食模式</h3>
-            <p>選擇今天要套用的營養分配方式。</p>
-          </div>
-          <div class="diet-mode-grid" role="radiogroup" aria-label="飲食模式">
-            <button class="diet-mode is-active" type="button" data-diet-mode="general">
-              <strong>一般紀錄</strong>
-              <span>依理想熱量與 5:2.5:2.5 分配營養素。</span>
-            </button>
-            <button class="diet-mode" type="button" data-diet-mode="carbDrop">
-              <strong>碳水漸降</strong>
-              <span>蛋白質與脂肪固定，碳水每週下調 30g。</span>
-            </button>
-            <button class="diet-mode" type="button" data-diet-mode="carbCycle">
-              <strong>碳循環</strong>
-              <span>低碳日與高碳日交替，配合訓練安排。</span>
-            </button>
-            <button class="diet-mode" type="button" data-diet-mode="keto">
-              <strong>生酮飲食</strong>
-              <span>低碳水，以蛋白質與脂肪補足熱量。</span>
-            </button>
-          </div>
-          <label class="cycle-setting" id="cycleSetting" hidden>
-            碳循環節奏
-            <select id="cyclePattern">
-              <option value="3low1high">三低一高</option>
-              <option value="4low1high">四低一高</option>
-            </select>
-          </label>
-          <div class="ratio-panel" id="ratioPanel">
-            <div class="subsection-heading compact">
-              <h3 id="ratioPanelTitle">自訂比例</h3>
-              <p id="ratioPanelCopy">依每公斤體重換算每日營養目標。</p>
-            </div>
-            <div class="ratio-grid" id="singleRatioControls">
-              <label>
-                蛋白質 g/kg
-                <input id="ratioProtein" type="number" min="0" max="5" step="0.1" value="1.8" />
-              </label>
-              <label id="ratioCarbsLabel">
-                碳水 g/kg
-                <input id="ratioCarbs" type="number" min="0" max="10" step="0.1" value="3" />
-              </label>
-              <label>
-                脂肪 g/kg
-                <input id="ratioFat" type="number" min="0" max="3" step="0.1" value="0.8" />
-              </label>
-              <label id="generalDeficitSetting">
-                理想熱量赤字 kcal
-                <input id="generalDeficit" type="number" min="300" max="500" step="50" value="400" />
-              </label>
-              <label id="weeklyDropSetting" hidden>
-                每週碳水下降 g
-                <input id="weeklyCarbDrop" type="number" min="0" max="100" step="5" value="30" />
-              </label>
-            </div>
-            <div class="cycle-ratio-controls" id="cycleRatioControls" hidden>
-              <div>
-                <strong>低碳日</strong>
-                <div class="ratio-grid">
-                  <label>
-                    碳水 g/kg
-                    <input id="lowCarbs" type="number" min="0" max="10" step="0.1" value="1.5" />
-                  </label>
-                  <label>
-                    蛋白質 g/kg
-                    <input id="lowProtein" type="number" min="0" max="5" step="0.1" value="1.8" />
-                  </label>
-                  <label>
-                    脂肪 g/kg
-                    <input id="lowFat" type="number" min="0" max="3" step="0.1" value="0.8" />
-                  </label>
-                </div>
-              </div>
-              <div>
-                <strong>高碳日</strong>
-                <div class="ratio-grid">
-                  <label>
-                    碳水 g/kg
-                    <input id="highCarbs" type="number" min="0" max="10" step="0.1" value="5" />
-                  </label>
-                  <label>
-                    蛋白質 g/kg
-                    <input id="highProtein" type="number" min="0" max="5" step="0.1" value="1" />
-                  </label>
-                  <label>
-                    脂肪 g/kg
-                    <input id="highFat" type="number" min="0" max="3" step="0.1" value="0.3" />
-                  </label>
-                </div>
-              </div>
-            </div>
-            <p class="ratio-preview" id="ratioPreview"></p>
-          </div>
-          <p class="mode-copy" id="dietModeCopy">一般紀錄會沿用目前的熱量與營養素目標，適合日常穩定追蹤。</p>
-          <div class="flow-actions">
-            <button class="text-button" id="backToProfileBtn" type="button">返回個人設定</button>
-            <button class="primary-button" id="enterDashboardBtn" type="button">進入飲食紀錄</button>
-          </div>
-        </section>
       </aside>
 
-      <section class="workspace flow-view" id="dashboardView">
+      <div class="main-col">
         <header class="topbar">
-          <div>
-            <p class="today" id="todayLabel"></p>
-            <h2 id="dashboardTitle">一般紀錄</h2>
+          <div class="title-block">
+            <p id="pageKicker">今天</p>
+            <h1 id="pageTitle" tabindex="-1">今日</h1>
           </div>
-          <label class="date-picker">
-            查看日期
-            <input id="logDate" type="date" />
-          </label>
-          <div class="settings-menu">
-            <button class="secondary-button menu-button" id="settingsMenuBtn" type="button" title="開啟選單" aria-label="開啟選單" aria-expanded="false" aria-controls="settingsMenu">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4 7h16M4 12h16M4 17h16" />
-              </svg>
+          <div class="top-actions">
+            <div class="date-nav" id="dateNav">
+              <button type="button" data-action="shift-date" data-delta="-1" aria-label="前一天">‹</button>
+              <input id="logDate" type="date" aria-label="查看日期" />
+              <button type="button" data-action="shift-date" data-delta="1" aria-label="下一天">›</button>
+              <button type="button" id="goTodayBtn" data-action="go-today">今天</button>
+            </div>
+            <button type="button" id="themeBtn" class="icon-btn" aria-label="切換淺色或深色">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v2.2M12 18.8V21M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M3 12h2.2M18.8 12H21M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6" /><circle cx="12" cy="12" r="3.2" /></svg>
             </button>
-            <div class="menu-panel" id="settingsMenu" hidden>
-              <button type="button" id="editProfileBtn">修改個人設定</button>
-              <button type="button" id="foodLibraryMenuBtn">食物庫</button>
-            </div>
           </div>
         </header>
 
-        <section class="metrics" aria-label="身體估算">
-          <article>
-            <span>BMR</span>
-            <strong id="bmrValue">0</strong>
-            <small>基礎代謝 kcal</small>
-          </article>
-          <article>
-            <span>TDEE</span>
-            <strong id="tdeeValue">0</strong>
-            <small>每日總消耗 kcal</small>
-          </article>
-          <article>
-            <span class="metric-label-row">
-              <span>今日目標</span>
-              <span class="cycle-day-badge" id="cycleDayBadge" hidden></span>
-            </span>
-            <strong id="targetValue">0</strong>
-            <small>依目標調整 kcal</small>
-          </article>
-        </section>
+        <main>
+          <noscript class="banner">FitPlan 需要 JavaScript。飲食和訓練資料只會存在這台裝置。</noscript>
 
-        <section class="dashboard-grid">
-          <article class="panel progress-panel">
-            <div class="section-heading">
-              <h2>今日進度</h2>
-              <span id="statusText">尚未紀錄</span>
-            </div>
-            <div class="rings">
-              <div class="calorie-ring" style="--progress: 0">
-                <div>
-                  <strong id="calorieConsumed">0</strong>
-                  <span>kcal 已攝取</span>
-                </div>
-              </div>
-              <div class="macro-list">
-                <div class="macro-row">
-                  <div>
-                    <span>蛋白質</span>
-                    <strong id="proteinText">0 / 0 g</strong>
-                  </div>
-                  <div class="bar"><span id="proteinBar"></span></div>
-                </div>
-                <div class="macro-row">
-                  <div>
-                    <span>碳水</span>
-                    <strong id="carbsText">0 / 0 g</strong>
-                  </div>
-                  <div class="bar"><span id="carbsBar"></span></div>
-                </div>
-                <div class="macro-row">
-                  <div>
-                    <span>脂肪</span>
-                    <strong id="fatText">0 / 0 g</strong>
-                  </div>
-                  <div class="bar"><span id="fatBar"></span></div>
-                </div>
+          <section data-view="today" id="view-today" aria-label="今日總覽">
+            <div id="profileHint" class="banner" hidden>
+              <p>目前用預設身材（170 cm、70 kg、28 歲）估算。到設定改成你的數字，目標才會準。</p>
+              <div class="banner-actions">
+                <button type="button" class="btn btn-primary" data-nav="settings">前往設定</button>
+                <button type="button" class="btn" data-action="dismiss-hint">先不用</button>
               </div>
             </div>
-            <div class="remaining" id="remainingText"></div>
-          </article>
-
-          <article class="panel logger-panel">
-            <div class="section-heading">
-              <h2>新增食物</h2>
-              <button class="text-button" id="customToggle" type="button">自訂食物</button>
+            <div id="todayHero" class="hero panel"></div>
+            <div class="panel">
+              <div class="section-head">
+                <h2>快速記錄</h2>
+                <button type="button" class="btn btn-ghost" data-nav="diet">飲食頁</button>
+              </div>
+              <div id="todayQuick"></div>
             </div>
-            <form id="logForm" class="log-form">
-              <label class="food-picker-field">
-                食物
-                <select id="foodSelect" class="native-food-select" aria-hidden="true" tabindex="-1"></select>
-                <button class="food-picker-button" id="foodPickerBtn" type="button" aria-expanded="false" aria-controls="foodPickerPanel">
-                  <span>
-                    <strong id="selectedFoodName">選擇食物</strong>
-                    <small id="selectedFoodMacros">從食物庫挑選一項食物</small>
-                  </span>
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="m7 10 5 5 5-5" />
-                  </svg>
-                </button>
+            <div class="split">
+              <section class="panel">
+                <div class="section-head">
+                  <h2>飲食</h2>
+                  <button type="button" class="btn btn-ghost" data-nav="diet">新增</button>
+                </div>
+                <div id="todayFoodList" class="stack"></div>
+              </section>
+              <section class="panel">
+                <div class="section-head">
+                  <h2>訓練</h2>
+                  <button type="button" class="btn btn-ghost" data-nav="train">記錄</button>
+                </div>
+                <div id="todayWorkoutList" class="stack"></div>
+              </section>
+            </div>
+          </section>
+
+          <section data-view="diet" id="view-diet" hidden aria-label="飲食紀錄">
+            <div class="diet-layout">
+              <div class="stack">
+                <section class="panel">
+                  <div class="section-head">
+                    <h2>選食物</h2>
+                    <button type="button" class="btn btn-ghost" data-nav="foods">食物庫</button>
+                  </div>
+                  <label class="field">
+                    搜尋
+                    <input id="foodSearch" type="search" placeholder="名稱或分類" autocomplete="off" enterkeyhint="search" />
+                  </label>
+                  <form id="logForm" class="add-bar">
+                    <div>
+                      <strong id="selectedFoodName">選擇食物</strong>
+                      <p id="selectedFoodMeta" class="muted"></p>
+                    </div>
+                    <label class="field compact">
+                      份量 g
+                      <input id="grams" type="number" min="1" max="2000" step="1" inputmode="decimal" value="100" />
+                    </label>
+                    <button class="btn btn-primary" id="addLogBtn" type="submit">加入紀錄</button>
+                  </form>
+                  <div class="chip-row" id="categoryChips" role="tablist" aria-label="食物分類">
+                    <button type="button" class="chip is-active" data-action="filter-category" data-category="all">全部</button>
+                    <button type="button" class="chip" data-action="filter-category" data-category="protein">蛋白質</button>
+                    <button type="button" class="chip" data-action="filter-category" data-category="carb">碳水</button>
+                    <button type="button" class="chip" data-action="filter-category" data-category="veg">蔬菜</button>
+                    <button type="button" class="chip" data-action="filter-category" data-category="fat">脂肪</button>
+                    <button type="button" class="chip" data-action="filter-category" data-category="drink">飲品</button>
+                    <button type="button" class="chip" data-action="filter-category" data-category="user">自訂</button>
+                  </div>
+                  <h3 class="subhead">收藏</h3>
+                  <div id="favoriteChips" class="chip-row"></div>
+                  <h3 class="subhead">最近</h3>
+                  <div id="recentChips" class="chip-row"></div>
+                  <div id="foodResults" class="stack"></div>
+                </section>
+              </div>
+              <div class="stack">
+                <section class="panel">
+                  <div class="section-head">
+                    <h2 id="logTitle">這一天</h2>
+                    <button type="button" class="btn btn-ghost" data-action="clear-log">清空</button>
+                  </div>
+                  <div id="foodLog" class="stack"></div>
+                </section>
+                <section class="panel">
+                  <div class="section-head">
+                    <h2>建議菜單</h2>
+                    <div class="inline-actions">
+                      <button type="button" class="btn btn-ghost" data-action="generate-plan">生成</button>
+                      <button type="button" class="btn btn-ghost" data-action="replace-plan">更換</button>
+                      <button type="button" class="btn btn-ghost" data-action="clear-plan">清除</button>
+                    </div>
+                  </div>
+                  <p id="planSummary" class="muted">尚未產生</p>
+                  <div id="mealPlan" class="stack"></div>
+                  <button type="button" class="btn" id="applyPlanBtn" data-action="apply-plan" hidden>把菜單加入紀錄</button>
+                </section>
+              </div>
+            </div>
+          </section>
+
+          <section data-view="train" id="view-train" hidden aria-label="訓練紀錄">
+            <div class="train-layout">
+              <form id="workoutForm" class="panel stack">
+                <div class="section-head">
+                  <h2>記錄一項</h2>
+                  <button type="button" class="btn btn-ghost" data-action="copy-last">複製上次</button>
+                </div>
+                <label class="field">
+                  動作
+                  <select id="exerciseSelect"></select>
+                </label>
+                <p id="workoutFormMode" class="muted">輸入重量和次數</p>
+                <div id="setRows" class="stack"></div>
+                <div class="inline-actions">
+                  <button type="button" class="btn" data-action="add-set">加一組</button>
+                  <button type="submit" class="btn btn-primary">儲存這項</button>
+                </div>
+                <details class="details">
+                  <summary>新增自己的動作</summary>
+                  <div class="inline-form">
+                    <label class="field">
+                      名稱
+                      <input id="customExerciseName" type="text" maxlength="30" placeholder="例如：農夫走路" />
+                    </label>
+                    <button type="button" class="btn" data-action="add-exercise">加入清單</button>
+                  </div>
+                </details>
+              </form>
+              <div class="stack">
+                <section class="panel">
+                  <div class="section-head">
+                    <h2>這一天的訓練</h2>
+                  </div>
+                  <div id="savedWorkouts" class="stack"></div>
+                </section>
+                <section class="panel">
+                  <div class="section-head">
+                    <h2>動作進度</h2>
+                  </div>
+                  <label class="field">
+                    查看動作
+                    <select id="historyExercise"></select>
+                  </label>
+                  <div id="historyChart" class="chart"></div>
+                  <div id="historyList" class="stack"></div>
+                </section>
+              </div>
+            </div>
+          </section>
+
+          <section data-view="progress" id="view-progress" hidden aria-label="進度">
+            <form id="weightForm" class="panel inline-form">
+              <label class="field">
+                日期
+                <input id="weightDate" type="date" required />
               </label>
-              <label>
-                份量 g
-                <input id="grams" type="number" min="1" max="2000" value="100" />
+              <label class="field">
+                體重 kg
+                <input id="weightKg" type="number" min="20" max="400" step="0.1" inputmode="decimal" placeholder="72.5" required />
               </label>
-              <button class="primary-button" id="addLogBtn" type="submit">加入紀錄</button>
+              <button class="btn btn-primary" type="submit">記錄體重</button>
             </form>
-            <div class="food-picker-panel" id="foodPickerPanel" hidden>
-              <div class="food-picker-head">
-                <div>
-                  <strong>選擇食物</strong>
-                  <span id="foodPickerCount">0 項</span>
-                </div>
-                <button class="text-button" id="closeFoodPickerBtn" type="button">關閉</button>
+            <section class="panel">
+              <div class="section-head">
+                <h2>體重趨勢</h2>
+                <span id="weightLatest" class="muted"></span>
               </div>
-              <label class="food-search-field" for="foodSearch">
-                <span>搜尋食物</span>
-                <input id="foodSearch" type="search" placeholder="輸入食物名稱或分類" autocomplete="off" />
-              </label>
-              <div class="food-picker-list" id="foodPickerList"></div>
+              <div id="weightChart" class="chart"></div>
+              <div id="weightTable" class="stack"></div>
+            </section>
+            <section class="panel">
+              <div class="section-head">
+                <h2>這 7 天</h2>
+              </div>
+              <div id="weekStats" class="stat-grid"></div>
+              <div id="weekBars" class="week-bars"></div>
+            </section>
+          </section>
+
+          <section data-view="settings" id="view-settings" hidden aria-label="設定">
+            <div id="goalNote" class="banner" hidden>
+              <p>已把原本的目標調成減脂（TDEE − 400）。這和你之前實際看到的熱量一致。要維持或增肌，在下面改即可。</p>
+              <div class="banner-actions">
+                <button type="button" class="btn" data-action="dismiss-goal-note">知道了</button>
+              </div>
             </div>
-            <form id="customForm" class="custom-form" hidden>
+            <form id="settingsForm" class="stack">
+              <section class="panel">
+                <div class="section-head">
+                  <h2>身材與目標</h2>
+                </div>
+                <div class="form-grid">
+                  <label class="field">身高 cm <input id="height" type="number" min="80" max="230" step="0.1" inputmode="decimal" /></label>
+                  <label class="field">體重 kg <input id="weight" type="number" min="30" max="250" step="0.1" inputmode="decimal" /></label>
+                  <label class="field">年齡 <input id="age" type="number" min="12" max="90" step="1" inputmode="numeric" /></label>
+                  <label class="field">
+                    生理性別
+                    <select id="sex">
+                      <option value="male">男性</option>
+                      <option value="female">女性</option>
+                    </select>
+                  </label>
+                  <label class="field wide">
+                    運動習慣
+                    <select id="activity">
+                      <option value="1.2">久坐，幾乎不運動</option>
+                      <option value="1.375">每週 1-3 天輕量運動</option>
+                      <option value="1.55">每週 3-5 天規律訓練</option>
+                      <option value="1.725">每週 6-7 天高強度</option>
+                      <option value="1.9">體力工作或雙練</option>
+                    </select>
+                  </label>
+                  <label class="field wide">
+                    目標
+                    <select id="goal">
+                      <option value="-15">減脂：每天少 300～500 kcal</option>
+                      <option value="0">維持：吃滿 TDEE</option>
+                      <option value="10">增肌：TDEE +10%</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="metric-row" aria-label="熱量估算">
+                  <div><span>BMR</span><strong id="settingsBmr">0</strong><small>基礎代謝</small></div>
+                  <div><span>TDEE</span><strong id="settingsTdee">0</strong><small>每日總消耗</small></div>
+                </div>
+              </section>
+
+              <section class="panel">
+                <div class="section-head">
+                  <h2>今天要看什麼</h2>
+                </div>
+                <div class="segmented" role="radiogroup" aria-label="追蹤重點">
+                  <button type="button" data-track-mode="calorie">熱量</button>
+                  <button type="button" data-track-mode="macro">營養素</button>
+                  <button type="button" data-track-mode="balanced">綜合</button>
+                </div>
+                <p id="modeCopy" class="muted"></p>
+              </section>
+
+              <section class="panel">
+                <div class="section-head">
+                  <h2>飲食模式</h2>
+                </div>
+                <div class="choice-grid" role="radiogroup" aria-label="飲食模式">
+                  <button type="button" class="choice" data-diet-mode="general">
+                    <strong>一般紀錄</strong>
+                    <span>理想熱量，碳水 50%、蛋白質 25%、脂肪 25%。</span>
+                  </button>
+                  <button type="button" class="choice" data-diet-mode="carbDrop">
+                    <strong>碳水漸降</strong>
+                    <span>蛋白質與脂肪固定，碳水每週下調。</span>
+                  </button>
+                  <button type="button" class="choice" data-diet-mode="carbCycle">
+                    <strong>碳循環</strong>
+                    <span>低碳日與高碳日交替。</span>
+                  </button>
+                  <button type="button" class="choice" data-diet-mode="keto">
+                    <strong>生酮飲食</strong>
+                    <span>低碳水，用蛋白質與脂肪補足熱量。</span>
+                  </button>
+                </div>
+                <p id="dietModeCopy" class="muted"></p>
+                <label class="field" id="cycleSetting" hidden>
+                  碳循環節奏
+                  <select id="cyclePattern">
+                    <option value="3low1high">三低一高</option>
+                    <option value="4low1high">四低一高</option>
+                  </select>
+                </label>
+                <div id="ratioPanel" class="stack">
+                  <div class="form-grid" id="singleRatioControls">
+                    <label class="field">蛋白質 g/kg <input id="ratioProtein" type="number" min="0" max="5" step="0.1" inputmode="decimal" /></label>
+                    <label class="field" id="ratioCarbsLabel">碳水 g/kg <input id="ratioCarbs" type="number" min="0" max="10" step="0.1" inputmode="decimal" /></label>
+                    <label class="field">脂肪 g/kg <input id="ratioFat" type="number" min="0" max="3" step="0.1" inputmode="decimal" /></label>
+                    <label class="field" id="weeklyDropSetting">每週碳水下降 g <input id="weeklyCarbDrop" type="number" min="0" max="100" step="5" inputmode="numeric" /></label>
+                  </div>
+                  <label class="field" id="generalDeficitSetting">
+                    理想熱量赤字 kcal
+                    <input id="generalDeficit" type="number" min="300" max="500" step="50" inputmode="numeric" />
+                  </label>
+                  <div id="cycleRatioControls" class="stack" hidden>
+                    <div>
+                      <h3 class="subhead">低碳日</h3>
+                      <div class="form-grid">
+                        <label class="field">碳水 g/kg <input id="lowCarbs" type="number" min="0" max="10" step="0.1" inputmode="decimal" /></label>
+                        <label class="field">蛋白質 g/kg <input id="lowProtein" type="number" min="0" max="5" step="0.1" inputmode="decimal" /></label>
+                        <label class="field">脂肪 g/kg <input id="lowFat" type="number" min="0" max="3" step="0.1" inputmode="decimal" /></label>
+                      </div>
+                    </div>
+                    <div>
+                      <h3 class="subhead">高碳日</h3>
+                      <div class="form-grid">
+                        <label class="field">碳水 g/kg <input id="highCarbs" type="number" min="0" max="10" step="0.1" inputmode="decimal" /></label>
+                        <label class="field">蛋白質 g/kg <input id="highProtein" type="number" min="0" max="5" step="0.1" inputmode="decimal" /></label>
+                        <label class="field">脂肪 g/kg <input id="highFat" type="number" min="0" max="3" step="0.1" inputmode="decimal" /></label>
+                      </div>
+                    </div>
+                  </div>
+                  <p id="ratioPreview" class="preview"></p>
+                  <button type="button" class="btn" id="restartDietBtn" data-action="restart-diet" hidden>從所選日期重新計算</button>
+                </div>
+              </section>
+
+              <section class="panel">
+                <div class="section-head">
+                  <h2>外觀</h2>
+                </div>
+                <div class="stack">
+                  <div class="segmented" role="group" aria-label="明暗">
+                    <button type="button" data-theme-value="system" aria-pressed="false">跟隨系統</button>
+                    <button type="button" data-theme-value="light" aria-pressed="false">淺色</button>
+                    <button type="button" data-theme-value="dark" aria-pressed="false">深色</button>
+                  </div>
+                  <p class="subhead">配色</p>
+                  <div class="palette-picker" role="group" aria-label="配色">
+                    <button type="button" data-palette-value="forest" aria-pressed="false">
+                      <span class="palette-swatch" aria-hidden="true"><i></i><i></i></span>
+                      <span>森林珊瑚</span>
+                    </button>
+                    <button type="button" data-palette-value="indigo" aria-pressed="false">
+                      <span class="palette-swatch" aria-hidden="true"><i></i><i></i></span>
+                      <span>靛藍琥珀</span>
+                    </button>
+                    <button type="button" data-palette-value="crimson" aria-pressed="false">
+                      <span class="palette-swatch" aria-hidden="true"><i></i><i></i></span>
+                      <span>緋紅青碧</span>
+                    </button>
+                    <button type="button" data-palette-value="lime" aria-pressed="false">
+                      <span class="palette-swatch" aria-hidden="true"><i></i><i></i></span>
+                      <span>墨藍萊姆</span>
+                    </button>
+                  </div>
+                </div>
+              </section>
+
+              <section class="panel">
+                <div class="section-head">
+                  <h2>備份</h2>
+                </div>
+                <p class="muted">資料存在這台裝置的瀏覽器。換手機或清除瀏覽資料前，先匯出 JSON。</p>
+                <div class="inline-actions">
+                  <button type="button" class="btn btn-primary" data-action="export-backup">匯出備份</button>
+                  <button type="button" class="btn" data-action="import-backup">匯入備份</button>
+                  <button type="button" class="btn btn-danger" data-action="clear-all">清除本機資料</button>
+                </div>
+                <input id="importFile" type="file" accept="application/json,.json" hidden />
+              </section>
+
+              <section class="panel">
+                <div class="section-head">
+                  <h2>食物與安裝</h2>
+                </div>
+                <div class="inline-actions">
+                  <button type="button" class="btn" data-nav="foods">開啟食物庫</button>
+                  <a class="btn" href="backend.html">雲端食物庫狀態</a>
+                </div>
+                <p class="muted">手機可以把 FitPlan 加到主畫面。Android 會出現安裝提示；iPhone 用分享選單的「加入主畫面」。</p>
+              </section>
+            </form>
+          </section>
+
+          <section data-view="foods" id="view-foods" hidden aria-label="食物庫">
+            <div class="section-head">
+              <button type="button" class="btn" data-nav="settings">返回設定</button>
+              <button type="button" class="btn btn-primary" data-action="toggle-custom-form">自訂食物</button>
+            </div>
+            <p id="foodLibrarySyncStatus" class="muted"></p>
+            <form id="customForm" class="panel form-grid" hidden>
               <input id="customId" type="hidden" />
-              <label>
-                名稱
-                <input id="customName" type="text" placeholder="例如：雞胸便當" />
-              </label>
-              <label>
-                份量 g
-                <input id="customServingGrams" type="number" min="1" max="5000" value="100" />
-              </label>
-              <label>
-                蛋白質 g
-                <input id="customProtein" type="number" min="0" step="0.1" value="0" />
-              </label>
-              <label>
-                碳水 g
-                <input id="customCarbs" type="number" min="0" step="0.1" value="0" />
-              </label>
-              <label>
-                脂肪 g
-                <input id="customFat" type="number" min="0" step="0.1" value="0" />
-              </label>
-              <button class="secondary-button" type="submit">儲存</button>
-              <button class="text-button" id="cancelFoodEditBtn" type="button">取消編輯</button>
-              <div class="food-database" id="foodDatabase"></div>
-            </form>
-          </article>
-        </section>
-
-        <section class="bottom-grid">
-          <article class="panel">
-            <div class="section-heading">
-              <h2 id="logTitle">飲食紀錄</h2>
-              <button class="text-button" id="clearLogBtn" type="button">清空</button>
-            </div>
-            <div class="food-log" id="foodLog"></div>
-          </article>
-
-          <article class="panel">
-            <div class="section-heading">
-              <h2>建議菜單</h2>
-              <div class="plan-actions">
-                <span id="planSummary">尚未產生</span>
-                <button class="text-button" id="planBtn" type="button">生成</button>
-                <button class="text-button" id="replacePlanBtn" type="button">更換</button>
-                <button class="text-button" id="clearPlanBtn" type="button">清除</button>
+              <label class="field wide">名稱 <input id="customName" type="text" maxlength="40" placeholder="例如：雞胸便當" required /></label>
+              <label class="field">這份有幾公克 <input id="customServingGrams" type="number" min="1" max="5000" value="100" inputmode="decimal" /></label>
+              <label class="field">蛋白質 g <input id="customProtein" type="number" min="0" step="0.1" value="0" inputmode="decimal" /></label>
+              <label class="field">碳水 g <input id="customCarbs" type="number" min="0" step="0.1" value="0" inputmode="decimal" /></label>
+              <label class="field">脂肪 g <input id="customFat" type="number" min="0" step="0.1" value="0" inputmode="decimal" /></label>
+              <p id="customPreview" class="muted wide"></p>
+              <div class="inline-actions wide">
+                <button class="btn btn-primary" type="submit">儲存食物</button>
+                <button type="button" class="btn" id="cancelFoodEditBtn">取消</button>
               </div>
-            </div>
-            <div class="meal-plan" id="mealPlan"></div>
-          </article>
-        </section>
-      </section>
+            </form>
+            <section class="panel">
+              <div class="section-head">
+                <h2>我的食物</h2>
+                <span id="customFoodCount" class="muted"></span>
+              </div>
+              <div id="customFoodList" class="stack"></div>
+            </section>
+            <section class="panel">
+              <div class="section-head">
+                <h2>全部食物</h2>
+                <span id="foodLibrarySummary" class="muted"></span>
+              </div>
+              <div id="foodLibraryList" class="stack"></div>
+            </section>
+          </section>
+        </main>
+      </div>
+    </div>
 
-      <section class="workspace flow-view food-library-view" id="foodLibraryView" aria-labelledby="food-library-title">
-        <header class="topbar">
-          <div>
-            <p class="today">已儲存的食物種類與營養資料</p>
-            <h2 id="food-library-title">食物庫</h2>
-          </div>
-          <button class="secondary-button" id="backToDashboardBtn" type="button">返回紀錄</button>
-        </header>
+    <div id="toast" class="toast" hidden role="status"></div>
+    <dialog id="confirmDialog">
+      <form method="dialog">
+        <h2 id="confirmTitle"></h2>
+        <p id="confirmBody"></p>
+        <div class="dialog-actions">
+          <button class="btn" value="cancel">取消</button>
+          <button class="btn btn-primary" id="confirmOk" value="ok">確定</button>
+        </div>
+      </form>
+    </dialog>
 
-        <article class="panel">
-          <div class="section-heading">
-            <h2>全部食物</h2>
-            <span id="foodLibrarySummary">0 項</span>
-          </div>
-          <p class="sync-status" id="foodLibrarySyncStatus">使用本機預設食物庫。</p>
-          <div class="food-library-list" id="foodLibraryList"></div>
-        </article>
-      </section>
-    </main>
-
-    <script src="food-basis.js?v=20260614-serving-basis"></script>
-    <script src="supabase-config.js?v=20260614-serving-basis"></script>
-    <script src="supabase-foods.js?v=20260614-serving-basis"></script>
-    <script src="app.js?v=20260614-serving-basis"></script>
+    <script src="food-basis.js?v=20261113-track"></script>
+    <script src="supabase-config.js?v=20261113-track"></script>
+    <script src="supabase-foods.js?v=20261113-track"></script>
+    <script src="fitplan-core.js?v=20261113-track"></script>
+    <script src="app.js?v=20261113-track"></script>
   </body>
 </html>
