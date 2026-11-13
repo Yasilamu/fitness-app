@@ -1,5 +1,5 @@
-const CACHE_NAME = "fitplan-pwa-v11";
-const VERSION = "20261113-palette2";
+const CACHE_NAME = "fitplan-pwa-v12";
+const VERSION = "20261113-track";
 const ASSETS = [
   "index.html",
   "backend.html",
