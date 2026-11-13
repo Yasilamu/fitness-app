@@ -1,5 +1,3 @@
-const ASSET_VERSION = "20260613-mobile-2";
-
 if ("serviceWorker" in navigator && location.protocol !== "file:") {
   window.addEventListener("load", () => {
     navigator.serviceWorker
@@ -10,18 +8,6 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
       });
   });
 }
-
-const appFrame = document.querySelector(".app-frame");
-
-appFrame?.addEventListener("load", () => {
-  const doc = appFrame.contentDocument;
-  if (!doc || doc.querySelector('link[data-responsive-fix="mobile"]')) return;
-  const link = doc.createElement("link");
-  link.rel = "stylesheet";
-  link.href = `responsive.css?v=${ASSET_VERSION}`;
-  link.dataset.responsiveFix = "mobile";
-  doc.head.append(link);
-});
 
 const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
 let deferredPrompt;
